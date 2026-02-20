@@ -46,6 +46,10 @@ class Reserve
     #[ORM\JoinColumn(nullable: false)]
     private ?Service $service = null;
 
+    #[ORM\ManyToOne(inversedBy: 'reserves')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Employee $employee = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -167,6 +171,18 @@ class Reserve
     public function setService(?Service $service): static
     {
         $this->service = $service;
+
+        return $this;
+    }
+
+    public function getEmployee(): ?Employee
+    {
+        return $this->employee;
+    }
+
+    public function setEmployee(?Employee $employee): static
+    {
+        $this->employee = $employee;
 
         return $this;
     }

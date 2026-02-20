@@ -3,100 +3,106 @@
 {% block title %}Iniciar Sesión — DonkeyTour{% endblock %}
 
 {% block body %}
-<div class="min-h-screen bg-[#fcfaf7] flex items-center justify-center p-4 relative overflow-hidden">
+<div class="h-screen w-full bg-[#fcfaf7] flex items-center justify-center p-4 relative overflow-hidden">
     <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-[#4A90A4] rounded-full blur-3xl opacity-10"></div>
 
-    <div class="w-full max-w-[440px] z-10">
-        <div class="flex flex-col items-center mb-8 animate-fade-in-down">
+    <div class="w-full max-w-[420px] z-10 flex flex-col items-center transform scale-90 md:scale-100 transition-transform duration-500">
+        
+        <div class="flex flex-col items-center mb-6 animate-fade-in-down">
             <div class="relative group">
-                <div class="absolute -inset-4 bg-gradient-to-tr from-amber-200 to-transparent rounded-full blur-2xl opacity-40 group-hover:opacity-60 transition duration-1000"></div>
-                <img src="{{ asset('img/logoDonkey_sinFondo.png') }}"
-                     alt="DonkeyTour"
-                     class="relative w-48 h-48 md:w-56 md:h-56 object-contain drop-shadow-[0_10px_10px_rgba(0,0,0,0.1)] transform transition-transform hover:scale-105 duration-500">
+                <div class="absolute -inset-4 bg-gradient-to-tr from-amber-200 to-transparent rounded-full blur-2xl opacity-40"></div>
+                <img src="{{ asset('img/logoDonkey_sinFondo.png') }}" 
+                     alt="DonkeyTour" 
+                     class="relative w-40 h-40 md:w-48 md:h-48 object-contain drop-shadow-xl transform transition-transform hover:scale-105 duration-500">
             </div>
         </div>
 
-        <div class="bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(139,94,60,0.15)] p-8 md:p-10 border border-white">
-            <div class="text-center mb-8">
-                <h1 class="text-2xl font-serif font-extrabold text-[#3E2F28] tracking-tight">¡Bienvenido, viajero!</h1>
-                <p class="text-stone-500 text-sm font-medium">Introduce tus credenciales para explorar</p>
+        <div class="w-full bg-white/80 backdrop-blur-xl rounded-[2.5rem] shadow-[0_20px_50px_rgba(139,94,60,0.12)] p-8 border border-white">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-serif font-extrabold text-[#3E2F28] tracking-tight">¡Bienvenido!</h1>
+                <p class="text-stone-500 text-xs font-medium uppercase tracking-wider">Accede a tu expedición</p>
             </div>
 
             {% if error %}
-                <div class="mb-6 flex items-center gap-3 p-4 bg-red-50 border border-red-100 rounded-2xl text-red-600 text-sm shadow-sm">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <div class="mb-4 flex items-center gap-2 p-3 bg-red-50 border border-red-100 rounded-xl text-red-600 text-[13px] shadow-sm italic">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 shrink-0" viewBox="0 0 20 20" fill="currentColor">
                         <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
                     </svg>
-                    <span class="font-medium">{{ error.messageKey|trans(error.messageData, 'security') }}</span>
+                    <span>{{ error.messageKey|trans(error.messageData, 'security') }}</span>
                 </div>
             {% endif %}
 
-            <form method="post" class="space-y-5">
-                <div class="space-y-2">
-                    <label for="inputEmail" class="block text-[11px] font-bold uppercase tracking-widest text-stone-400 ml-4">Email</label>
+            <form method="post" class="space-y-4">
+                <div class="space-y-1">
+                    <label for="inputEmail" class="block text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-4">Email</label>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-stone-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
                             </svg>
                         </span>
-                        <input type="email" name="_username" id="inputEmail" value="{{ last_username }}"
-                               class="w-full pl-11 pr-5 py-4 bg-stone-100/50 border-transparent focus:border-[#4A90A4] focus:bg-white focus:ring-4 focus:ring-[#4A90A4]/10 rounded-2xl transition-all duration-300 outline-none text-stone-700 placeholder-stone-400"
-                               placeholder="tu@correo.com" required autofocus>
+                        <input type="email" name="_username" id="inputEmail" value="{{ last_username }}" 
+                               class="w-full pl-10 pr-4 py-3 bg-stone-100/50 border-transparent focus:border-[#4A90A4] focus:bg-white focus:ring-4 focus:ring-[#4A90A4]/10 rounded-xl transition-all outline-none text-stone-700 text-sm" 
+                               placeholder="viajero@donkey.com" required autofocus>
                     </div>
                 </div>
 
-                <div class="space-y-2">
+                <div class="space-y-1">
                     <div class="flex justify-between items-center px-4">
-                        <label for="inputPassword" class="text-[11px] font-bold uppercase tracking-widest text-stone-400">Contraseña</label>
-                        <a href="#" class="text-[11px] font-bold text-[#4A90A4] hover:text-[#3a7282]">¿Olvido?</a>
+                        <label for="inputPassword" class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Contraseña</label>
                     </div>
                     <div class="relative">
                         <span class="absolute inset-y-0 left-0 flex items-center pl-4 text-stone-400">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                             </svg>
                         </span>
-                        <input type="password" name="_password" id="inputPassword"
-                               class="w-full pl-11 pr-5 py-4 bg-stone-100/50 border-transparent focus:border-[#4A90A4] focus:bg-white focus:ring-4 focus:ring-[#4A90A4]/10 rounded-2xl transition-all duration-300 outline-none text-stone-700 placeholder-stone-400"
+                        <input type="password" name="_password" id="inputPassword" 
+                               class="w-full pl-10 pr-4 py-3 bg-stone-100/50 border-transparent focus:border-[#4A90A4] focus:bg-white focus:ring-4 focus:ring-[#4A90A4]/10 rounded-xl transition-all outline-none text-stone-700 text-sm" 
                                placeholder="••••••••" required>
                     </div>
                 </div>
 
                 <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-                <button type="submit"
-                        class="w-full group relative flex justify-center py-4 px-4 border border-transparent font-bold rounded-2xl text-white bg-[#8B5E3C] hover:bg-[#764f32] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#8B5E3C] transition-all duration-300 shadow-lg shadow-amber-900/30 overflow-hidden">
+                <button type="submit" 
+                        class="w-full group relative flex justify-center py-3.5 px-4 border border-transparent font-bold rounded-xl text-white bg-[#8B5E3C] hover:bg-[#764f32] focus:outline-none transition-all duration-300 shadow-lg shadow-amber-900/20 overflow-hidden">
                     <span class="absolute inset-0 w-full h-full bg-gradient-to-r from-white/0 via-white/10 to-white/0 transform -translate-x-full group-hover:animate-[shimmer_1.5s_infinite]"></span>
-                    Iniciar Sesión
+                    Entrar
                 </button>
             </form>
 
-            <div class="mt-8 pt-6 border-t border-stone-100 text-center">
-                <p class="text-stone-500 text-sm font-medium">
-                    ¿Nuevo por aquí?
-                    <a href="{{ path('app_register') }}" class="text-[#4A90A4] font-bold hover:text-[#3a7282] transition-colors decoration-2 underline-offset-4">
-                        Crea tu cuenta gratis
+            <div class="mt-6 pt-5 border-t border-stone-100 text-center">
+                <p class="text-stone-500 text-xs">
+                    ¿Nuevo aquí? 
+                    <a href="{{ path('app_register') }}" class="text-[#4A90A4] font-bold hover:underline ml-1 underline-offset-4">
+                        Regístrate gratis
                     </a>
                 </p>
             </div>
         </div>
-
-        <p class="mt-8 text-center text-stone-400 text-[10px] uppercase tracking-[0.2em]">
-            &copy; {{ "now"|date("Y") }} DonkeyTour - Granada, España
+        
+        <p class="mt-6 text-stone-400 text-[9px] uppercase tracking-[0.3em]">
+            &copy; DonkeyTour Granada
         </p>
     </div>
 </div>
 
 <style>
+    /* Forzar el no-scroll total */
+    body, html {
+        margin: 0;
+        height: 100%;
+        overflow: hidden !important;
+    }
     @keyframes shimmer {
         100% { transform: translateX(100%); }
     }
     .animate-fade-in-down {
-        animation: fadeInDown 0.8s ease-out;
+        animation: fadeInDown 0.8s ease-out forwards;
     }
     @keyframes fadeInDown {
-        0% { opacity: 0; transform: translateY(-20px); }
+        0% { opacity: 0; transform: translateY(-15px); }
         100% { opacity: 1; transform: translateY(0); }
     }
 </style>
