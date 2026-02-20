@@ -1,23 +1,82 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Crear Cuenta — DonkeyTour{% endblock %}
 
 {% block body %}
-    {% for flash_error in app.flashes('verify_email_error') %}
-        <div class="alert alert-danger" role="alert">{{ flash_error }}</div>
-    {% endfor %}
+<div class="auth-bg">
+    <div class="auth-card auth-card-wide">
+        {# Logo #}
+        <div class="auth-logo">
+            <span class="auth-logo-icon">🫏</span>
+            <div class="auth-logo-title">DonkeyTour</div>
+            <div class="auth-logo-subtitle">Crea tu cuenta y empieza la aventura</div>
+        </div>
 
-    <h1>Register</h1>
+        {# Errores globales del formulario #}
+        {% for flashError in app.flashes('verify_email_error') %}
+            <div class="auth-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>{{ flashError }}</span>
+            </div>
+        {% endfor %}
 
-    {{ form_errors(registrationForm) }}
+        {{ form_start(registrationForm, {'attr': {'novalidate': 'novalidate'}}) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.agreeTerms) }}
+        {# Nombre completo #}
+        <div class="auth-field">
+            {{ form_label(registrationForm.nombre) }}
+            {{ form_widget(registrationForm.nombre) }}
+            {{ form_errors(registrationForm.nombre) }}
+        </div>
 
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+        {# Email #}
+        <div class="auth-field">
+            {{ form_label(registrationForm.email) }}
+            {{ form_widget(registrationForm.email) }}
+            {{ form_errors(registrationForm.email) }}
+        </div>
+
+        {# NIF y Teléfono en fila #}
+        <div class="auth-row">
+            <div class="auth-field">
+                {{ form_label(registrationForm.nif) }}
+                {{ form_widget(registrationForm.nif) }}
+                {{ form_errors(registrationForm.nif) }}
+            </div>
+            <div class="auth-field">
+                {{ form_label(registrationForm.telefono) }}
+                {{ form_widget(registrationForm.telefono) }}
+                {{ form_errors(registrationForm.telefono) }}
+            </div>
+        </div>
+
+        {# Contraseña #}
+        <div class="auth-field">
+            {{ form_label(registrationForm.plainPassword) }}
+            {{ form_widget(registrationForm.plainPassword) }}
+            {{ form_errors(registrationForm.plainPassword) }}
+        </div>
+
+        {# Aceptar términos #}
+        <div class="auth-checkbox">
+            {{ form_widget(registrationForm.agreeTerms) }}
+            {{ form_label(registrationForm.agreeTerms) }}
+            {{ form_errors(registrationForm.agreeTerms) }}
+        </div>
+
+        <button type="submit" class="auth-btn">
+            Crear Cuenta
+        </button>
+
+        {{ form_end(registrationForm) }}
+
+        <div class="auth-link">
+            ¿Ya tienes cuenta? <a href="{{ path('app_login') }}">Inicia sesión</a>
+        </div>
+    </div>
+</div>
 {% endblock %}
