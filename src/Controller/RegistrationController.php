@@ -24,8 +24,17 @@ class RegistrationController extends AbstractController
     }
 
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
-    {
+    public function register(
+        Request $request, 
+        UserPasswordHasherInterface $userPasswordHasher, 
+        Security $security, 
+        EntityManagerInterface $entityManager
+    ): Response {
+        // Redirigir si el usuario ya está logueado para evitar que vea el formulario de registro
+        if ($this->getUser()) {
+            return $this->redirectToRoute('app_home');
+        }
+
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
@@ -34,28 +43,31 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Cifrar la contraseña
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
+            
+            // Establecer fecha de creación
             $user->setCreatedAt(new \DateTimeImmutable());
 
             $entityManager->persist($user);
             $entityManager->flush();
 
-            // generate a signed url and email it to the user
+            // Enviar email de confirmación
             $this->emailVerifier->sendEmailConfirmation(
                 'app_verify_email',
                 $user,
                 (new TemplatedEmail())
                     ->from(new Address('contacto@donkeytour.com', 'DonkeyTour'))
                     ->to((string) $user->getEmail())
-                    ->subject('Please Confirm your Email')
+                    ->subject('Por favor, confirma tu correo electrónico')
                     ->htmlTemplate('registration/confirmation_email.html.twig')
             );
 
-            // do anything else you need here, like send an email
+            // Loguear al usuario automáticamente tras el registro
+            $security->login($user, 'form_login', 'main');
 
-            return $security->login($user, 'form_login', 'main');
+            // IMPORTANTE: Redirigir al home para cargar el layout correcto
+            return $this->redirectToRoute('app_home');
         }
 
         return $this->render('registration/register.html.twig', [
@@ -68,7 +80,6 @@ class RegistrationController extends AbstractController
     {
         $this->denyAccessUnlessGranted('IS_AUTHENTICATED_FULLY');
 
-        // validate email confirmation link, sets User::isVerified=true and persists
         try {
             /** @var User $user */
             $user = $this->getUser();
@@ -79,9 +90,8 @@ class RegistrationController extends AbstractController
             return $this->redirectToRoute('app_register');
         }
 
-        // @TODO Change the redirect on success and handle or remove the flash message in your templates
-        $this->addFlash('success', 'Your email address has been verified.');
+        $this->addFlash('success', 'Tu dirección de correo ha sido verificada.');
 
-        return $this->redirectToRoute('app_register');
+        return $this->redirectToRoute('app_home'); // Redirigir al home tras verificar
     }
 }
