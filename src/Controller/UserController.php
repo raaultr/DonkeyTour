@@ -14,6 +14,38 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/user')]
 final class UserController extends AbstractController
 {
+    // Listado de empleados
+    #[Route('/admin/employees', name: 'app_user_employees', methods: ['GET'])]
+    public function employees(UserRepository $userRepository): Response
+    {
+        $allUsers = $userRepository->findAll();
+        
+        $employees = array_filter($allUsers, function($user) {
+            $roles = $user->getRoles();
+            return in_array('ROLE_EMPLOYEE', $roles);
+        });
+
+        return $this->render('user/index.html.twig', [
+            'users' => $employees,
+            'title' => 'Gestión de Empleados',
+        ]);
+    }
+    // Listado de clientes
+    #[Route('/admin/clients', name: 'app_user_clients', methods: ['GET'])]
+    public function clients(UserRepository $userRepository): Response
+    {
+        $allUsers = $userRepository->findAll();
+        
+        $clients = array_filter($allUsers, function($user) {
+            return in_array('ROLE_CLIENTE', $user->getRoles());
+        });
+
+        return $this->render('user/index.html.twig', [
+            'users' => $clients,
+            'title' => 'Listado de Clientes',
+        ]);
+    }
+
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
