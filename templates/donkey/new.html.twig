@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Donkey{% endblock %}
+
+{% block body %}
+    <h1>Create new Donkey</h1>
+
+    {{ include('donkey/_form.html.twig') }}
+
+    <a href="{{ path('app_donkey_index') }}">back to list</a>
+{% endblock %}

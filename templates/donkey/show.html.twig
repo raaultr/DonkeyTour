@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Donkey{% endblock %}
+
+{% block body %}
+    <h1>Donkey</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ donkey.id }}</td>
+            </tr>
+            <tr>
+                <th>Nombre</th>
+                <td>{{ donkey.nombre }}</td>
+            </tr>
+            <tr>
+                <th>Years</th>
+                <td>{{ donkey.years }}</td>
+            </tr>
+            <tr>
+                <th>Race</th>
+                <td>{{ donkey.race }}</td>
+            </tr>
+            <tr>
+                <th>Kilogram</th>
+                <td>{{ donkey.kilogram }}</td>
+            </tr>
+            <tr>
+                <th>CreatedAt</th>
+                <td>{{ donkey.createdAt ? donkey.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>UpdatedAt</th>
+                <td>{{ donkey.updatedAt ? donkey.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>DeletedAt</th>
+                <td>{{ donkey.deletedAt ? donkey.deletedAt|date('Y-m-d H:i:s') : '' }}</td>
+            </tr>
+            <tr>
+                <th>Disponible</th>
+                <td>{{ donkey.disponible ? 'Yes' : 'No' }}</td>
+            </tr>
+            <tr>
+                <th>MaxWeightr</th>
+                <td>{{ donkey.maxWeightr }}</td>
+            </tr>
+            <tr>
+                <th>PhotoUrl</th>
+                <td>{{ donkey.photoUrl }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_donkey_index') }}">back to list</a>
+
+    <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}">edit</a>
+
+    {{ include('donkey/_delete_form.html.twig') }}
+{% endblock %}

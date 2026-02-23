@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nuestros Servicios - DonkeyTour Granada{% endblock %}
+
+{% block client_body %}
+<div class="bg-[#FCFAF7] min-h-screen">
+    
+    {# --- HERO SECTION (Coherente con la Home) --- #}
+    <div class="relative h-[70vh] flex items-center justify-center text-center text-white">
+        <div class="absolute inset-0 bg-black/40 z-10"></div>
+        <img src="{{ asset('img/burroBanner.png') }}" class="absolute inset-0 w-full h-full object-cover" alt="Servicios DonkeyTour">
+        
+        <div class="relative z-20 px-4">
+            <span class="text-[#764F32] bg-white px-3 py-1 text-xs font-bold uppercase tracking-widest mb-4 inline-block">Qué ofrecemos</span>
+            <h1 class="text-5xl md:text-6xl font-bold mb-4 shadow-sm">Nuestros Servicios</h1>
+            <p class="text-lg opacity-90 max-w-2xl mx-auto font-medium">Descubre la magia de Granada de una forma auténtica a través de nuestras rutas históricas y senderos naturales únicos.</p>
+        </div>
+    </div>
+
+    {# --- FILTROS (Estilo Minimalista) --- #}
+    <div class="max-w-7xl mx-auto px-6 -mt-8 relative z-30">
+        <div class="bg-white rounded-xl shadow-lg p-4 flex flex-wrap items-center justify-center gap-4 border border-stone-100">
+            <button class="px-6 py-2 bg-[#764F32] text-white rounded-lg font-bold text-sm transition-all">Todos</button>
+            <button class="px-6 py-2 text-stone-500 hover:bg-stone-50 rounded-lg font-bold text-sm transition-all">Despedidas</button>
+            <button class="px-6 py-2 text-stone-500 hover:bg-stone-50 rounded-lg font-bold text-sm transition-all">Histórico</button>
+            <button class="px-6 py-2 text-stone-500 hover:bg-stone-50 rounded-lg font-bold text-sm transition-all">Terapias</button>
+        </div>
+    </div>
+
+    {# --- GRID DE SERVICIOS (Basado en tus cards de la Home) --- #}
+    <div class="max-w-7xl mx-auto px-6 py-20">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+            {% for service in services %}
+                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-100 flex flex-col group">
+                    
+                    {# Imagen del Servicio #}
+                    <div class="relative h-64 overflow-hidden">
+                        <img src="{{ asset('img/burroBanner.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ service.type }}">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-[#764F32]/90 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase tracking-tighter">
+                                {{ service.type }}
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-2xl shadow-md border border-stone-50">
+                            <span class="text-[#764F32] font-bold text-xl">{{ service.basePrice }}€</span>
+                            <span class="text-stone-400 text-[10px] font-medium block -mt-1 uppercase">/ pers.</span>
+                        </div>
+                    </div>
+
+                    {# Contenido (Mismo estilo que tus cards de la Home) #}
+                    <div class="p-8 flex-grow flex flex-col">
+                        <div class="flex items-center gap-4 mb-4 text-stone-400 text-[11px] font-bold uppercase tracking-widest">
+                            <span class="flex items-center gap-1">🕒 {{ service.duration ? service.duration|date('H:i') : '2' }} Horas</span>
+                            <span class="flex items-center gap-1">👥 Grupo máx. {{ service.maxAphor }}</span>
+                        </div>
+
+                        <h3 class="text-2xl font-bold text-stone-800 mb-4 group-hover:text-[#764F32] transition-colors tracking-tight">
+                            {{ service.type }}
+                        </h3>
+                        
+                        <p class="text-stone-500 text-sm leading-relaxed mb-8 flex-grow">
+                            {{ service.description|length > 130 ? service.description|slice(0, 130) ~ '...' : service.description }}
+                        </p>
+                        
+                        <a href="{{ path('app_service_show', {'id': service.id}) }}" class="block w-full text-center py-4 border-2 border-[#764F32] text-[#764F32] font-bold rounded-xl hover:bg-[#764F32] hover:text-white transition-all uppercase tracking-widest text-[11px]">
+                            Ver Detalles del Tour
+                        </a>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-span-full text-center py-20">
+                    <p class="text-stone-400 italic">No hay servicios disponibles en este momento.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# --- SECCIÓN "POR QUÉ ELEGIRNOS" (Basada en tu diseño morado) --- #}
+    <div class="bg-[#301633] py-20 text-white">
+        <div class="max-w-7xl mx-auto px-6 text-center">
+            <h2 class="text-4xl font-bold mb-4">¿Por qué elegir DonkeyTour?</h2>
+            <p class="text-stone-300 mb-16 max-w-2xl mx-auto">Nos apasiona Granada y el bienestar de nuestros animales. Vive una experiencia única y auténtica.</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-[#764F32]/20 rounded-2xl flex items-center justify-center mb-6 border border-[#764F32]/30">
+                        <span class="text-3xl text-[#764F32]">🐾</span>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Bienestar Animal</h4>
+                    <p class="text-stone-400 text-sm">Nuestros burros son parte de la familia. Reciben cuidados constantes y descanso garantizado.</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-[#764F32]/20 rounded-2xl flex items-center justify-center mb-6 border border-[#764F32]/30">
+                        <span class="text-3xl text-[#764F32]">🏰</span>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Guías Locales</h4>
+                    <p class="text-stone-400 text-sm">Expertos apasionados que conocen cada leyenda del Albaycín y cada sendero de la Sierra.</p>
+                </div>
+                <div class="flex flex-col items-center">
+                    <div class="w-16 h-16 bg-[#764F32]/20 rounded-2xl flex items-center justify-center mb-6 border border-[#764F32]/30">
+                        <span class="text-3xl text-[#764F32]">🌍</span>
+                    </div>
+                    <h4 class="text-xl font-bold mb-3">Turismo Sostenible</h4>
+                    <p class="text-stone-400 text-sm">Promovemos un turismo de bajo impacto, respetuoso con el medio ambiente y la cultura local.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# --- SECCIÓN CTA FINAL --- #}
+    <div class="py-24 max-w-5xl mx-auto px-6">
+        <div class="bg-[#D95D26] rounded-[2.5rem] p-12 text-center text-white shadow-2xl shadow-orange-900/20">
+            <h2 class="text-4xl font-bold mb-6">¿Listo para una aventura inolvidable?</h2>
+            <p class="text-white/80 mb-10 max-w-xl mx-auto">Reserva hoy tu plaza y prepárate para descubrir Granada desde una perspectiva totalmente diferente.</p>
+            <div class="flex flex-wrap justify-center gap-4">
+                <a href="#" class="px-10 py-4 bg-white text-[#D95D26] font-bold rounded-xl hover:bg-stone-100 transition-all uppercase tracking-widest text-xs">Reservar Ahora</a>
+                <a href="#" class="px-10 py-4 border-2 border-white text-white font-bold rounded-xl hover:bg-white hover:text-[#D95D26] transition-all uppercase tracking-widest text-xs">Contáctanos</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
