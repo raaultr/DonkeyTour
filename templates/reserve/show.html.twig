@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Detalle de Reserva — DonkeyTour{% endblock %}
+{% block page_title %}Detalle de Reserva{% endblock %}
+
+{% block body %}
+<div class="animate-fade-in-down max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    
+    <div class="text-center mb-8">
+        <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-sm">Reserva #{{ reserve.id }}</span>
+        <h1 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Detalles de la Reserva</h1>
+    </div>
+
+    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)] mb-8">
+        <table class="w-full text-left">
+            <tbody class="text-stone-600 text-lg">
+                <tr class="border-b border-stone-100">
+                    <th class="py-4 font-bold text-[#3E2F28] w-1/3">ID</th>
+                    <td class="py-4">{{ reserve.id }}</td>
+                </tr>
+                <tr class="border-b border-stone-100">
+                    <th class="py-4 font-bold text-[#3E2F28]">Cliente</th>
+                    <td class="py-4">{{ reserve.clientName }}</td>
+                </tr>
+                <tr class="border-b border-stone-100">
+                    <th class="py-4 font-bold text-[#3E2F28]">Fecha</th>
+                    <td class="py-4">{{ reserve.date ? reserve.date|date('Y-m-d H:i') : '' }}</td>
+                </tr>
+                <tr>
+                    <th class="py-4 font-bold text-[#3E2F28]">Estado</th>
+                    <td class="py-4">
+                        <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-sm font-bold uppercase tracking-wider">
+                            {{ reserve.status }}
+                        </span>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="flex justify-between items-center gap-4">
+        <a href="{{ path('app_reserve_index') }}" class="inline-flex items-center gap-2 text-stone-500 font-bold hover:text-[#3E2F28] transition-colors">
+            <span aria-hidden="true">&larr;</span> Volver al listado
+        </a>
+        
+        <div class="flex gap-4">
+            <a href="{{ path('app_reserve_edit', {'id': reserve.id}) }}" class="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-[#3E2F28] font-bold rounded-2xl transition-all duration-300">
+                Editar
+            </a>
+            {{ include('reserve/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
+{% endblock %}

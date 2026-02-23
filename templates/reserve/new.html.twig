@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nueva Reserva — DonkeyTour{% endblock %}
+{% block page_title %}Nueva Reserva{% endblock %}
+
+{% block body %}
+<div class="animate-fade-in-down max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="text-center mb-8">
+        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-sm">Gestión</span>
+        <h1 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Crear Nueva Reserva</h1>
+    </div>
+
+    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)]">
+        
+        {{ include('reserve/_form.html.twig') }}
+        
+        <div class="mt-8 text-center">
+            <a href="{{ path('app_reserve_index') }}" class="text-stone-500 font-bold hover:text-[#3E2F28] transition-colors text-sm">
+                &larr; Volver al listado
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

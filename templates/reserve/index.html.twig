@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservas — DonkeyTour{% endblock %}
+{% block page_title %}Gestión de Reservas{% endblock %}
+
+{% block client_body %}
+<div class="animate-fade-in-down max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <div class="flex justify-between items-center mb-8">
+        <div>
+            <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-sm">Administración</span>
+            <h1 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Listado de Reservas</h1>
+        </div>
+        <a href="{{ path('app_reserve_new') }}" class="inline-block px-6 py-3 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-amber-900/20 transform hover:-translate-y-1">
+            + Nueva Reserva
+        </a>
+    </div>
+
+    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-8 shadow-[0_10px_30px_rgba(139,94,60,0.05)] overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+            <thead>
+                <tr>
+                    <th class="text-stone-400 text-xs font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">ID</th>
+                    <th class="text-stone-400 text-xs font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Cliente</th>
+                    <th class="text-stone-400 text-xs font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Fecha</th>
+                    <th class="text-stone-400 text-xs font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Estado</th>
+                    <th class="text-stone-400 text-xs font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4 text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-stone-600">
+            {% for reserve in reserves %}
+                <tr class="hover:bg-stone-50/50 transition-colors border-b border-stone-100 last:border-0 group">
+                    <td class="py-4 px-4 font-bold text-[#3E2F28]">{{ reserve.id }}</td>
+                    <td class="py-4 px-4">{{ reserve.clientName }}</td> {# Cambia clientName por tu propiedad real #}
+                    <td class="py-4 px-4">{{ reserve.date ? reserve.date|date('Y-m-d H:i') : '' }}</td>
+                    <td class="py-4 px-4">
+                        <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-xs font-bold uppercase tracking-wider">
+                            {{ reserve.status }}
+                        </span>
+                    </td>
+                    <td class="py-4 px-4 text-right space-x-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <a href="{{ path('app_reserve_show', {'id': reserve.id}) }}" class="inline-block text-[#4A90A4] font-bold hover:text-cyan-700 transition-colors text-sm">Ver</a>
+                        <a href="{{ path('app_reserve_edit', {'id': reserve.id}) }}" class="inline-block text-[#8B5E3C] font-bold hover:text-[#764f32] transition-colors text-sm">Editar</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="5" class="py-12 text-center text-stone-500 font-medium">
+                        No hay reservas registradas en este momento.
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
