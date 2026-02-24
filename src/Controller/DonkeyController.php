@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Donkey;
 use App\Form\DonkeyType;
 use App\Repository\DonkeyRepository;
+use App\Repository\DonkeyReserveRepository; // Añadimos esto
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,7 +26,7 @@ final class DonkeyController extends AbstractController
 
     #[Route('/new', name: 'app_donkey_new', methods: ['GET', 'POST'])]
     #[IsGranted('ROLE_ADMIN')]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, DonkeyReserveRepository $reserveRepo): Response
     {
         $donkey = new Donkey();
         $form = $this->createForm(DonkeyType::class, $donkey);
