@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EmployeeRepository::class)]
 class Employee extends User
 {
-    #[ORM\Column]
-    private ?int $socialSecurity = null;
+    #[ORM\Column(length: 20)]
+    private ?string $socialSecurity = null;
 
     /**
      * @var Collection<int, Reserve>
@@ -24,12 +24,12 @@ class Employee extends User
         $this->reserves = new ArrayCollection();
     }
 
-    public function getSocialSecurity(): ?int
+    public function getSocialSecurity(): ?string
     {
         return $this->socialSecurity;
     }
 
-    public function setSocialSecurity(int $socialSecurity): static
+    public function setSocialSecurity(string $socialSecurity): static
     {
         $this->socialSecurity = $socialSecurity;
 
