@@ -5,11 +5,13 @@ namespace App\Controller;
 use App\Entity\Donkey;
 use App\Form\DonkeyType;
 use App\Repository\DonkeyRepository;
+use App\Repository\DonkeyReserveRepository; // Añadimos esto
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/donkey')]
 final class DonkeyController extends AbstractController
@@ -23,13 +25,26 @@ final class DonkeyController extends AbstractController
     }
 
     #[Route('/new', name: 'app_donkey_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
+    #[IsGranted('ROLE_ADMIN')]
+    public function new(Request $request, EntityManagerInterface $entityManager, DonkeyReserveRepository $reserveRepo): Response
     {
         $donkey = new Donkey();
         $form = $this->createForm(DonkeyType::class, $donkey);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // 1. Fechas automáticas
+            $donkey->setCreatedAt(new \DateTimeImmutable());
+            $donkey->setUpdatedAt(new \DateTime());
+            
+            // 2. PARCHE PARA EL ERROR DE RESERVE_ID:
+            // Si la base de datos te obliga a tener una reserva, buscamos la primera que exista
+            // y se la asignamos temporalmente para que te deje guardar.
+            $primeraReserva = $reserveRepo->findOneBy([]);
+            if ($primeraReserva) {
+                $donkey->setReserve($primeraReserva);
+            }
+
             $entityManager->persist($donkey);
             $entityManager->flush();
 
@@ -51,12 +66,14 @@ final class DonkeyController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_donkey_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Donkey $donkey, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(DonkeyType::class, $donkey);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $donkey->setUpdatedAt(new \DateTime());
             $entityManager->flush();
 
             return $this->redirectToRoute('app_donkey_index', [], Response::HTTP_SEE_OTHER);
@@ -69,6 +86,7 @@ final class DonkeyController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_donkey_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, Donkey $donkey, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$donkey->getId(), $request->getPayload()->getString('_token'))) {

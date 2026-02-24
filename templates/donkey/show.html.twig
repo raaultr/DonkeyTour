@@ -1,62 +1,59 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Donkey{% endblock %}
+{% block title %}{{ donkey.nombre }} - DonkeyTour{% endblock %}
 
 {% block body %}
-    <h1>Donkey</h1>
+<div class="bg-[#FCFAF7] min-h-screen p-8 flex items-center justify-center">
+    <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-xl overflow-hidden flex flex-col md:flex-row border border-stone-100">
+        
+        {# Imagen lateral #}
+        <div class="md:w-1/2 h-80 md:h-auto bg-stone-200">
+            {% if donkey.photoUrl %}
+                <img src="{{ donkey.photoUrl }}" class="w-full h-full object-cover" alt="{{ donkey.nombre }}">
+            {% else %}
+                <div class="flex items-center justify-center h-full text-6xl">🐴</div>
+            {% endif %}
+        </div>
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ donkey.id }}</td>
-            </tr>
-            <tr>
-                <th>Nombre</th>
-                <td>{{ donkey.nombre }}</td>
-            </tr>
-            <tr>
-                <th>Years</th>
-                <td>{{ donkey.years }}</td>
-            </tr>
-            <tr>
-                <th>Race</th>
-                <td>{{ donkey.race }}</td>
-            </tr>
-            <tr>
-                <th>Kilogram</th>
-                <td>{{ donkey.kilogram }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ donkey.createdAt ? donkey.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ donkey.updatedAt ? donkey.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>DeletedAt</th>
-                <td>{{ donkey.deletedAt ? donkey.deletedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Disponible</th>
-                <td>{{ donkey.disponible ? 'Yes' : 'No' }}</td>
-            </tr>
-            <tr>
-                <th>MaxWeightr</th>
-                <td>{{ donkey.maxWeightr }}</td>
-            </tr>
-            <tr>
-                <th>PhotoUrl</th>
-                <td>{{ donkey.photoUrl }}</td>
-            </tr>
-        </tbody>
-    </table>
+        {# Info #}
+        <div class="md:w-1/2 p-10 flex flex-col justify-center">
+            <div class="mb-6">
+                <span class="text-[#8B5E3C] font-bold text-xs uppercase tracking-[0.3em]">{{ donkey.race }}</span>
+                <h1 class="text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">{{ donkey.nombre }}</h1>
+            </div>
 
-    <a href="{{ path('app_donkey_index') }}">back to list</a>
+            <div class="grid grid-cols-2 gap-6 mb-8">
+                <div>
+                    <p class="text-[10px] font-bold text-stone-400 uppercase">Edad</p>
+                    <p class="text-lg font-bold text-stone-800">{{ donkey.years }} años</p>
+                </div>
+                <div>
+                    <p class="text-[10px] font-bold text-stone-400 uppercase">Peso</p>
+                    <p class="text-lg font-bold text-stone-800">{{ donkey.kilogram }} kg</p>
+                </div>
+            </div>
 
-    <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}">edit</a>
-
-    {{ include('donkey/_delete_form.html.twig') }}
+            <div class="flex flex-col gap-4">
+                {# SI ES ADMIN: MOSTRAR OPCIONES DE GESTIÓN #}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <div class="flex gap-4">
+                        <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}" class="flex-grow text-center py-4 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-2xl transition-all">
+                            Editar ficha
+                        </a>
+                        {{ include('donkey/_delete_form.html.twig') }}
+                    </div>
+                {% else %}
+                    {# SI NO ES ADMIN: MOSTRAR BOTÓN ADOPTAR #}
+                    <button class="w-full py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all shadow-lg shadow-amber-900/20">
+                        Adoptar a {{ donkey.nombre }}
+                    </button>
+                {% endif %}
+                
+                <a href="{{ path('app_donkey_index') }}" class="text-center text-xs font-bold text-stone-400 uppercase tracking-widest hover:text-stone-600 transition-all mt-4">
+                    ← Volver al establo
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
