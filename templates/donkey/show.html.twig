@@ -37,11 +37,13 @@
 
             <div class="flex flex-col gap-4">
                 {% if is_granted('ROLE_ADMIN') %}
-                    <div class="flex gap-4">
-                        <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}" class="flex-grow text-center py-4 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-2xl transition-all">
+                    <div class="flex gap-3 items-stretch"> {# items-stretch para que midan lo mismo de alto #}
+                        <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}" class="flex-grow flex items-center justify-center bg-stone-100 hover:bg-stone-200 text-stone-600 text-xs font-bold uppercase tracking-widest rounded-2xl transition-all">
                             Editar ficha
                         </a>
-                        <div class="shrink-0">
+                        
+                        {# Botón de eliminar como acción secundaria compacta #}
+                        <div class="w-14">
                             {{ include('donkey/_delete_form.html.twig') }}
                         </div>
                     </div>

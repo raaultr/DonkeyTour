@@ -1,13 +1,43 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Donkey{% endblock %}
+{% block title %}Editar — {{ donkey.nombre }}{% endblock %}
 
 {% block body %}
-    <h1>Edit Donkey</h1>
+<div class="bg-[#FCFAF7] pt-2 px-4 pb-4"> {# pt-2 para subirlo al máximo #}
+    
+    <div class="w-full max-w-7xl mx-auto">
+        
+        {# --- CABECERA MÁS COMPACTA --- #}
+        <div class="flex items-center justify-between mb-4 px-4"> {# mb-4 en lugar de mb-8 #}
+            <div>
+                <span class="text-[#8B5E3C] font-bold tracking-[0.2em] uppercase text-[9px]">Gestión</span>
+                <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight font-serif mt-0">Editar a {{ donkey.nombre }}</h1>
+            </div>
+            
+            <a href="{{ path('app_donkey_index') }}" class="group flex items-center gap-2 px-4 py-2 bg-white border-2 border-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest rounded-xl hover:border-stone-400 transition-all">
+                <span>←</span> Volver
+            </a>
+        </div>
 
     {{ include('donkey/_form.html.twig', {'button_label': 'Actualizar'}) }}
 
-    <a href="{{ path('app_donkey_index') }}">back to list</a>
+            {# --- FORMULARIO --- #}
+            <div class="relative z-10">
+                {# Asegúrate de que el archivo _form.html.twig también tenga gaps reducidos #}
+                {{ include('donkey/_form.html.twig', {'button_label': 'Guardar Cambios'}) }}
+            </div>
 
-    {{ include('donkey/_delete_form.html.twig') }}
+            {# --- ZONA DE BORRADO INTEGRADA --- #}
+            <div class="mt-6 pt-6 border-t border-stone-100 flex items-center justify-between">
+                
+                {{ include('donkey/_delete_form.html.twig') }}
+            </div>
+
+        </div>
+
+        <p class="text-center mt-4 text-stone-300 text-[9px] font-bold uppercase tracking-[0.3em]">
+            DonkeyTour CRM
+        </p>
+    </div>
+</div>
 {% endblock %}
