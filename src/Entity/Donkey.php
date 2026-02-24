@@ -46,7 +46,7 @@ class Donkey
     private ?string $photoUrl = null;
 
     #[ORM\ManyToOne(inversedBy: 'donkeys')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)] // CAMBIADO A TRUE para que no de error al crear burros nuevos
     private ?DonkeyReserve $reserve = null;
 
     /**
@@ -58,6 +58,10 @@ class Donkey
     public function __construct()
     {
         $this->services = new ArrayCollection();
+        // Inicialización automática
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTime();
+        $this->disponible = true; // Por defecto disponible
     }
 
     public function getId(): ?int
@@ -73,7 +77,6 @@ class Donkey
     public function setNombre(string $nombre): static
     {
         $this->nombre = $nombre;
-
         return $this;
     }
 
@@ -85,7 +88,6 @@ class Donkey
     public function setYears(?int $years): static
     {
         $this->years = $years;
-
         return $this;
     }
 
@@ -97,7 +99,6 @@ class Donkey
     public function setRace(string $race): static
     {
         $this->race = $race;
-
         return $this;
     }
 
@@ -109,7 +110,6 @@ class Donkey
     public function setKilogram(float $kilogram): static
     {
         $this->kilogram = $kilogram;
-
         return $this;
     }
 
@@ -121,7 +121,6 @@ class Donkey
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
-
         return $this;
     }
 
@@ -133,7 +132,6 @@ class Donkey
     public function setUpdatedAt(?\DateTime $updatedAt): static
     {
         $this->updatedAt = $updatedAt;
-
         return $this;
     }
 
@@ -145,7 +143,6 @@ class Donkey
     public function setDeletedAt(?\DateTime $deletedAt): static
     {
         $this->deletedAt = $deletedAt;
-
         return $this;
     }
 
@@ -157,7 +154,6 @@ class Donkey
     public function setDisponible(bool $disponible): static
     {
         $this->disponible = $disponible;
-
         return $this;
     }
 
@@ -169,7 +165,6 @@ class Donkey
     public function setMaxWeightr(float $maxWeightr): static
     {
         $this->maxWeightr = $maxWeightr;
-
         return $this;
     }
 
@@ -181,7 +176,6 @@ class Donkey
     public function setPhotoUrl(?string $photoUrl): static
     {
         $this->photoUrl = $photoUrl;
-
         return $this;
     }
 
@@ -193,7 +187,6 @@ class Donkey
     public function setReserve(?DonkeyReserve $reserve): static
     {
         $this->reserve = $reserve;
-
         return $this;
     }
 
@@ -211,19 +204,16 @@ class Donkey
             $this->services->add($service);
             $service->setDonkey($this);
         }
-
         return $this;
     }
 
     public function removeService(Service $service): static
     {
         if ($this->services->removeElement($service)) {
-            // set the owning side to null (unless already changed)
             if ($service->getDonkey() === $this) {
                 $service->setDonkey(null);
             }
         }
-
         return $this;
     }
 }

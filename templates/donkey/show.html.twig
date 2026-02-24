@@ -2,9 +2,11 @@
 
 {% block title %}{{ donkey.nombre }} - DonkeyTour{% endblock %}
 
-{% block body %}
-<div class="bg-[#FCFAF7] min-h-screen p-8 flex items-center justify-center">
-    <div class="bg-white w-full max-w-4xl rounded-[3rem] shadow-xl overflow-hidden flex flex-col md:flex-row border border-stone-100">
+{# 1. DEFINIMOS EL CONTENIDO UNA SOLA VEZ #}
+{% block donkey_show_content %}
+{# pt-12 para subir la tarjeta y h-fit para que no ocupe espacio innecesario #}
+<div class="bg-[#FCFAF7] min-h-screen p-8 flex justify-center pt-12 md:pt-20">
+    <div class="bg-white w-full max-w-4xl h-fit rounded-[3rem] shadow-xl overflow-hidden flex flex-col md:flex-row border border-stone-100">
         
         {# Imagen lateral #}
         <div class="md:w-1/2 h-80 md:h-auto bg-stone-200">
@@ -34,26 +36,39 @@
             </div>
 
             <div class="flex flex-col gap-4">
-                {# SI ES ADMIN: MOSTRAR OPCIONES DE GESTIÓN #}
                 {% if is_granted('ROLE_ADMIN') %}
                     <div class="flex gap-4">
                         <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}" class="flex-grow text-center py-4 bg-stone-100 hover:bg-stone-200 text-stone-600 font-bold rounded-2xl transition-all">
                             Editar ficha
                         </a>
-                        {{ include('donkey/_delete_form.html.twig') }}
+                        <div class="shrink-0">
+                            {{ include('donkey/_delete_form.html.twig') }}
+                        </div>
                     </div>
                 {% else %}
-                    {# SI NO ES ADMIN: MOSTRAR BOTÓN ADOPTAR #}
-                    <button class="w-full py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all shadow-lg shadow-amber-900/20">
+                    <button class="w-full py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all shadow-lg shadow-amber-900/20 active:scale-95">
                         Adoptar a {{ donkey.nombre }}
                     </button>
                 {% endif %}
                 
-                <a href="{{ path('app_donkey_index') }}" class="text-center text-xs font-bold text-stone-400 uppercase tracking-widest hover:text-stone-600 transition-all mt-4">
+                <a href="{{ path('app_donkey_index') }}" class="text-center text-xs font-bold text-stone-400 uppercase tracking-widest hover:text-[#8B5E3C] transition-all mt-4">
                     ← Volver al establo
                 </a>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{# 2. LLAMAMOS AL CONTENIDO DESDE EL BLOQUE QUE CORRESPONDA #}
+{% block body %}
+    {% if is_granted('ROLE_ADMIN') %}
+        {{ block('donkey_show_content') }}
+    {% endif %}
+{% endblock %}
+
+{% block client_body %}
+    {% if not is_granted('ROLE_ADMIN') %}
+        {{ block('donkey_show_content') }}
+    {% endif %}
 {% endblock %}

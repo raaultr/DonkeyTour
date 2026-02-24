@@ -33,17 +33,10 @@ final class DonkeyController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // 1. Fechas automáticas
+            // Sincronización de fechas con los tipos de la entidad
             $donkey->setCreatedAt(new \DateTimeImmutable());
             $donkey->setUpdatedAt(new \DateTime());
-            
-            // 2. PARCHE PARA EL ERROR DE RESERVE_ID:
-            // Si la base de datos te obliga a tener una reserva, buscamos la primera que exista
-            // y se la asignamos temporalmente para que te deje guardar.
-            $primeraReserva = $reserveRepo->findOneBy([]);
-            if ($primeraReserva) {
-                $donkey->setReserve($primeraReserva);
-            }
+            $donkey->setDeletedAt(null);
 
             $entityManager->persist($donkey);
             $entityManager->flush();

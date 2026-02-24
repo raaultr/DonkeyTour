@@ -35,7 +35,7 @@ final class UserController extends AbstractController
             'type' => 'employee',
         ]);
     }
-    // Listado de clientes
+    // Gestión de clientes
     #[Route('/admin/clients', name: 'app_user_clients', methods: ['GET'])]
     public function clients(UserRepository $userRepository): Response
     {
@@ -47,7 +47,7 @@ final class UserController extends AbstractController
 
         return $this->render('user/index.html.twig', [
             'users' => $clients,
-            'title' => 'Listado de Clientes',
+            'title' => 'Gestión de Clientes',
             'type' => 'client',
         ]);
     }
