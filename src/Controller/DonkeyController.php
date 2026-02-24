@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/donkey')]
 final class DonkeyController extends AbstractController
@@ -23,6 +24,7 @@ final class DonkeyController extends AbstractController
     }
 
     #[Route('/new', name: 'app_donkey_new', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $donkey = new Donkey();
@@ -30,6 +32,11 @@ final class DonkeyController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Sincronización de fechas con los tipos de la entidad
+            $donkey->setCreatedAt(new \DateTimeImmutable());
+            $donkey->setUpdatedAt(new \DateTime());
+            $donkey->setDeletedAt(null);
+
             $entityManager->persist($donkey);
             $entityManager->flush();
 
@@ -51,12 +58,14 @@ final class DonkeyController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_donkey_edit', methods: ['GET', 'POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function edit(Request $request, Donkey $donkey, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(DonkeyType::class, $donkey);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $donkey->setUpdatedAt(new \DateTime());
             $entityManager->flush();
 
             return $this->redirectToRoute('app_donkey_index', [], Response::HTTP_SEE_OTHER);
@@ -69,6 +78,7 @@ final class DonkeyController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_donkey_delete', methods: ['POST'])]
+    #[IsGranted('ROLE_ADMIN')]
     public function delete(Request $request, Donkey $donkey, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$donkey->getId(), $request->getPayload()->getString('_token'))) {
