@@ -3,6 +3,9 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Entity\Client; 
+use App\Entity\Employee;
+use App\Entity\Admin;
 use App\Form\UserType;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
@@ -10,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 #[Route('/user')]
 final class UserController extends AbstractController
@@ -28,6 +32,7 @@ final class UserController extends AbstractController
         return $this->render('user/index.html.twig', [
             'users' => $employees,
             'title' => 'Gestión de Empleados',
+            'type' => 'employee',
         ]);
     }
     // Listado de clientes
@@ -43,6 +48,7 @@ final class UserController extends AbstractController
         return $this->render('user/index.html.twig', [
             'users' => $clients,
             'title' => 'Listado de Clientes',
+            'type' => 'client',
         ]);
     }
 
@@ -51,28 +57,65 @@ final class UserController extends AbstractController
     {
         return $this->render('user/index.html.twig', [
             'users' => $userRepository->findAll(),
+            'title' => 'Todos los Usuarios', // Añadido
+            'type' => 'user',
         ]);
     }
 
-    #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $user = new User();
-        $form = $this->createForm(UserType::class, $user);
-        $form->handleRequest($request);
+    #[Route('/new/{type}', name: 'app_user_new', methods: ['GET', 'POST'], defaults: ['type' => 'user'])]
+public function new(
+    Request $request, 
+    string $type, 
+    EntityManagerInterface $entityManager,
+    UserPasswordHasherInterface $passwordHasher
+): Response {
+    // 1. Instanciamos la clase hija real según la herencia
+    $user = match($type) {
+        'employee' => new Employee(),
+        'client'   => new Client(),
+        'admin'    => new Admin(),
+        default    => new User(),
+    };
+    
+    // 2. Configuramos el label para la vista
+    $label = match($type) {
+        'employee' => 'Empleado',
+        'client'   => 'Cliente',
+        default    => 'Usuario',
+    };
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($user);
-            $entityManager->flush();
+    // 3. Asignamos roles (opcional si tus clases hijas ya lo hacen en el constructor)
+    if ($type === 'employee') $user->setRoles(['ROLE_EMPLOYEE']);
+    if ($type === 'client') $user->setRoles(['ROLE_CLIENTE']);
 
-            return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);
-        }
+    $form = $this->createForm(UserType::class, $user);
+    $form->handleRequest($request);
 
-        return $this->render('user/new.html.twig', [
-            'user' => $user,
-            'form' => $form,
-        ]);
+    if ($form->isSubmitted() && $form->isValid()) {
+        // Cifrar contraseña
+        $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
+        $user->setPassword($hashedPassword);
+        $user->setCreatedAt(new \DateTimeImmutable());
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        $this->addFlash('success', "¡$label creado correctamente!");
+
+        // Redirigir a la tabla correspondiente
+        $route = match($type) {
+            'employee' => 'app_user_employees',
+            'client'   => 'app_user_clients',
+            default    => 'app_user_index'
+        };
+        return $this->redirectToRoute($route);
     }
+
+    return $this->render('user/new.html.twig', [
+        'form' => $form,
+        'type' => $label,
+    ]);
+}
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response

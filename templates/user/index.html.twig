@@ -1,115 +1,53 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ title|default('User Index') }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-<div class="bg-white/80 backdrop-blur-md border border-stone-100 rounded-[2rem] shadow-sm overflow-hidden">
-    {# CABECERA #}
-    <div class="p-6 border-b border-stone-100 flex justify-between items-center bg-white/50">
+<div class="max-w-7xl mx-auto py-8 px-4">
+    {# Cabecera de la Lista #}
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-2xl font-bold text-[#3E2F28]">{{ title|default('User Index') }}</h1>
-            <p class="text-sm text-stone-500">Gestión y control de registros en el sistema</p>
+            <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight">{{ title }}</h1>
+            <p class="text-stone-500">Gestión de registros para la plataforma DonkeyTour.</p>
         </div>
-        <a href="{{ path('app_user_new') }}" class="inline-flex items-center gap-2 bg-[#8B5E3C] hover:bg-[#764f32] text-white px-6 py-3 rounded-xl text-sm font-bold transition-all shadow-lg shadow-[#8B5E3C]/20 active:scale-95">
+        
+        {# BOTÓN CLAVE: Pasa el 'type' al controlador para que el 'new' sepa qué es #}
+        <a href="{{ path('app_user_new', {'type': type|default('user')}) }}" 
+           class="inline-flex items-center justify-center gap-2 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold px-6 py-3 rounded-2xl shadow-lg transition-all hover:-translate-y-1">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
             </svg>
-            Create New
+            Añadir {{ type == 'employee' ? 'Empleado' : (type == 'client' ? 'Cliente' : 'Usuario') }}
         </a>
     </div>
 
-    {# TABLA RESPONSIVA #}
-    <div class="overflow-x-auto">
+    {# Tabla con diseño moderno #}
+    <div class="bg-white rounded-[2rem] shadow-sm border border-stone-100 overflow-hidden">
         <table class="w-full text-left border-collapse">
             <thead>
-                <tr class="bg-stone-50/50">
-                    <th class="p-4 text-xs font-bold uppercase text-stone-400 tracking-wider">User Info</th>
-                    <th class="p-4 text-xs font-bold uppercase text-stone-400 tracking-wider">Contact & ID</th>
-                    <th class="p-4 text-xs font-bold uppercase text-stone-400 tracking-wider">Status</th>
-                    <th class="p-4 text-xs font-bold uppercase text-stone-400 tracking-wider">Roles</th>
-                    <th class="p-4 text-xs font-bold uppercase text-stone-400 tracking-wider">Joined At</th>
-                    <th class="p-4 text-xs font-bold uppercase text-stone-400 tracking-wider text-right">Actions</th>
+                <tr class="bg-stone-50 border-b border-stone-100">
+                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider">Nombre</th>
+                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider">Email</th>
+                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider">NIF</th>
+                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider text-right">Acciones</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-stone-100">
-            {% for user in users %}
-                <tr class="hover:bg-stone-50/40 transition-colors group">
-                    {# Info Principal #}
-                    <td class="p-4">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-[#8B5E3C]/10 text-[#8B5E3C] flex items-center justify-center font-bold">
-                                {{ user.nombre|first|upper }}
-                            </div>
-                            <div>
-                                <div class="font-bold text-stone-800">{{ user.nombre }}</div>
-                                <div class="text-xs text-stone-400">ID: #{{ user.id }}</div>
-                            </div>
-                        </div>
-                    </td>
-
-                    {# Contacto y NIF #}
-                    <td class="p-4">
-                        <div class="text-sm text-stone-600 font-medium">{{ user.email }}</div>
-                        <div class="text-xs text-stone-400">{{ user.telefono }} | {{ user.nif }}</div>
-                    </td>
-
-                    {# Estados (Verificado / Contrato) #}
-                    <td class="p-4">
-                        <div class="flex flex-col gap-1">
-                            {% if user.isVerified %}
-                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-green-600 uppercase">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-green-500"></span> Verified
-                                </span>
-                            {% else %}
-                                <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-500 uppercase">
-                                    <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Pending
-                                </span>
-                            {% endif %}
-                            
-                            {% if user.contratoFirmado %}
-                                <span class="text-[9px] font-bold text-blue-500 uppercase tracking-tighter">📄 Contrato OK</span>
-                            {% endif %}
-                        </div>
-                    </td>
-
-                    {# Roles con Badges #}
-                    <td class="p-4">
-                        <div class="flex flex-wrap gap-1">
-                            {% for role in user.roles %}
-                                <span class="px-2 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider
-                                    {{ role == 'ROLE_ADMIN' ? 'bg-purple-100 text-purple-700' : 
-                                       role == 'ROLE_CLIENTE' ? 'bg-[#4A90A4]/10 text-[#4A90A4]' : 
-                                       'bg-stone-100 text-stone-500' }}">
-                                    {{ role|replace({'ROLE_': ''}) }}
-                                </span>
-                            {% endfor %}
-                        </div>
-                    </td>
-
-                    {# Fecha de creación #}
-                    <td class="p-4 text-sm text-stone-500">
-                        {{ user.createdAt ? user.createdAt|date('d M, Y') : 'N/A' }}
-                    </td>
-
-                    {# Acciones #}
-                    <td class="p-4 text-right">
-                        <div class="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <a href="{{ path('app_user_show', {'id': user.id}) }}" class="p-2 bg-white border border-stone-200 rounded-lg text-stone-400 hover:text-[#4A90A4] hover:border-[#4A90A4] transition-all" title="Ver detalle">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
-                            </a>
-                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="p-2 bg-white border border-stone-200 rounded-lg text-stone-400 hover:text-[#8B5E3C] hover:border-[#8B5E3C] transition-all" title="Editar">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-                            </a>
-                        </div>
-                    </td>
-                </tr>
-            {% else %}
-                <tr>
-                    <td colspan="6" class="p-12 text-center text-stone-400 italic">
-                        No se encontraron registros en el sistema.
-                    </td>
-                </tr>
-            {% endfor %}
+            <tbody class="divide-y divide-stone-50">
+                {% for user in users %}
+                    <tr class="hover:bg-stone-50/50 transition-colors">
+                        <td class="p-5 font-semibold text-stone-800">{{ user.nombre }}</td>
+                        <td class="p-5 text-stone-600">{{ user.email }}</td>
+                        <td class="p-5 text-stone-600 font-mono text-sm">{{ user.nif }}</td>
+                        <td class="p-5 text-right space-x-3">
+                            <a href="{{ path('app_user_show', {'id': user.id}) }}" class="text-stone-400 hover:text-[#8B5E3C] transition-colors">Ver</a>
+                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="text-stone-400 hover:text-[#8B5E3C] transition-colors font-bold">Editar</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4" class="p-12 text-center text-stone-400 italic">No se han encontrado registros en esta categoría.</td>
+                    </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
