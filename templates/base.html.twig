@@ -19,8 +19,9 @@
 </head>
 <body class="font-[Inter] bg-[#fcfaf7] text-stone-700 antialiased selection:bg-[#4A90A4] selection:text-white">
 
-    {# Fondo decorativo común #}
     <div class="fixed -bottom-24 -right-24 w-96 h-96 bg-[#4A90A4] rounded-full blur-3xl opacity-10 pointer-events-none z-0"></div>
+
+    {% set route = app.request.attributes.get('_route') %}
 
     {% if is_granted('ROLE_ADMIN') %}
         {# --- VISTA ADMINISTRADOR: Sidebar Fijo Completo --- #}
@@ -33,7 +34,7 @@
                 <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
                     <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4 mt-2">Principal</p>
                     
-                    <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ app.request.attributes.get('_route') == 'app_home' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
+                    <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ route == 'app_home' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" /></svg>
                         <span>Home</span>
                     </a>
@@ -42,6 +43,7 @@
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         <span>Reservas Globales</span>
                     </a>
+                    
                     <a href="{{ path('app_donkey_index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#4A90A4] transition-all duration-300 group">
                         <span class="text-lg grayscale opacity-70 group-hover:grayscale-0 group-hover:opacity-100 transition-all duration-300 group-hover:scale-110">🐴</span>
                         <span>Gestión de Burros</span>
@@ -49,14 +51,12 @@
 
                     <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4 mt-8">Administración</p>
                     
-                    {# GESTIÓN DE EMPLEADOS #}
-                    <a href="{{ path('app_user_employees') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ app.request.attributes.get('_route') == 'app_user_employees' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
+                    <a href="{{ path('app_user_employees') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ route == 'app_user_employees' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
                         <span>Gestionar Empleados</span>
                     </a>
 
-                    {# GESTIÓN DE CLIENTES #}
-                    <a href="{{ path('app_user_clients') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ app.request.attributes.get('_route') == 'app_user_clients' ? 'text-[#4A90A4] bg-[#4A90A4]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#4A90A4]' }}">
+                    <a href="{{ path('app_user_clients') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ route == 'app_user_clients' ? 'text-[#4A90A4] bg-[#4A90A4]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#4A90A4]' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
                         <span>Gestionar Clientes</span>
                     </a>
@@ -72,7 +72,7 @@
                                 <p class="text-sm font-bold text-[#3E2F28]">{{ app.user.nombre | default('Admin') }}</p>
                                 <p class="text-xs text-stone-400 font-medium">Administrador</p>
                             </div>
-                            <div class="w-11 h-11 rounded-2xl bg-[#4A90A4]/10 text-[#4A90A4] flex items-center justify-center font-bold border border-[#4A90A4]/20 shadow-sm">
+                            <div class="w-11 h-11 rounded-2xl bg-[#4A90A4]/10 text-[#4A90A4] flex items-center justify-center font-bold">
                                 {{ app.user.nombre|default('A')|first|upper }}
                             </div>
                         </div>
@@ -91,7 +91,7 @@
         {# --- VISTA CLIENTE / PÚBLICA --- #}
         <div class="min-h-screen flex flex-col relative z-10">
             
-            {% if app.request.attributes.get('_route') != 'app_login' %}
+            {% if route != 'app_login' and route != 'app_register' %}
                 <header class="h-28 bg-white/80 backdrop-blur-md border-b border-stone-100 sticky top-0 flex items-center justify-between px-8 z-50">
                     <div class="flex items-center gap-3">
                         <img src="{{ asset('img/logoDonkey_sinFondo.png') }}" alt="DonkeyTour" class="size-28 object-contain">
@@ -128,11 +128,12 @@
             {% endif %}
 
             <main class="flex-1 w-full">
+                {# ESTE ES EL BLOQUE QUE USARÁN LOGIN Y REGISTER PARA SER VISIBLES #}
                 {% block client_body %}{% endblock %}
                 {% block public_body %}{% endblock %}
             </main>
 
-            {% if app.request.attributes.get('_route') != 'app_login' %}
+            {% if route != 'app_login' and route != 'app_register' %}
                 <footer class="bg-white border-t border-stone-100 py-8 mt-12 text-center text-stone-400 text-xs tracking-wider uppercase">
                     &copy; {{ "now"|date("Y") }} DonkeyTour - Granada, España
                 </footer>
@@ -141,5 +142,4 @@
     {% endif %}
 
 </body>
-</html>
 </html>

@@ -51,7 +51,7 @@ final class UserController extends AbstractController
             'type' => 'client',
         ]);
     }
-
+    
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
