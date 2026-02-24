@@ -2,39 +2,48 @@
 
 {% block title %}Nuestros Burros - DonkeyTour{% endblock %}
 
-{% block body %}
-<div class="bg-[#FCFAF7] min-h-screen p-8">
-    <div class="max-w-7xl mx-auto">
-        
-        <div class="flex justify-between items-end mb-10">
+{% block client_body %}
+<div class="bg-[#FCFAF7] min-h-screen pt-12">
+
+    {# --- CABECERA SENCILLA (Sustituye a la Hero) --- #}
+    <div class="max-w-7xl mx-auto px-6 mb-12">
+        <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-stone-200 pb-8">
             <div>
-                <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-xs">Catálogo</span>
-                <h1 class="text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Nuestros Protagonistas</h1>
+                <span class="text-[#764F32] text-[10px] font-black uppercase tracking-[0.3em] mb-2 block">DonkeyTour Family</span>
+                <h1 class="text-4xl md:text-5xl font-bold text-stone-900 tracking-tighter">Nuestros Burros</h1>
+                <p class="text-stone-500 mt-2 font-medium">Conoce a los verdaderos protagonistas de nuestras rutas por Granada.</p>
             </div>
-            
-            {# SOLO EL ADMIN VE EL BOTÓN DE CREAR #}
+
+            {# --- BOTÓN GESTIÓN (Solo Admin) --- #}
             {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('app_donkey_new') }}" class="bg-[#8B5E3C] hover:bg-[#764f32] text-white px-6 py-3 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-amber-900/20">
+                <a href="{{ path('app_donkey_new') }}" class="px-6 py-3 bg-[#764F32] text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-stone-800 transition-all shadow-md">
                     + Registrar nuevo burro
                 </a>
             {% endif %}
         </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    {# --- GRID DE BURROS --- #}
+    <section class="max-w-7xl mx-auto px-6 py-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
             {% for donkey in donkeys %}
-                <div class="bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 shadow-sm hover:shadow-xl transition-all group">
+                <div class="group bg-white rounded-[2.5rem] overflow-hidden border border-stone-100 shadow-sm hover:shadow-2xl transition-all duration-500 flex flex-col relative">
+                    
                     {# Imagen #}
-                    <div class="h-56 bg-stone-200 relative overflow-hidden">
-                        {% if donkey.photoUrl %}
-                            <img src="{{ donkey.photoUrl }}" alt="{{ donkey.nombre }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                        {% else %}
-                            <div class="flex items-center justify-center h-full text-4xl italic text-stone-400">🐴</div>
-                        {% endif %}
+                    <div class="relative h-80 overflow-hidden bg-stone-200">
+                        <img src="{{ donkey.photoUrl ? donkey.photoUrl : asset('img/burroBanner.png') }}" 
+                             class="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110" 
+                             alt="{{ donkey.nombre }}">
                         
-                        <div class="absolute top-4 right-4">
-                            <span class="px-3 py-1 {% if donkey.disponible %}bg-emerald-500{% else %}bg-red-400{% endif %} text-white text-[10px] font-black uppercase tracking-widest rounded-full">
-                                {{ donkey.disponible ? 'Disponible' : 'En ruta' }}
-                            </span>
+                        <div class="absolute top-6 left-6">
+                            {% if donkey.disponible %}
+                                <span class="bg-emerald-500 text-white px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
+                                    Disponible
+                                </span>
+                            {% else %}
+                                <span class="bg-amber-500 text-white px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm">
+                                    En descanso
+                                </span>
+                            {% endif %}
                         </div>
                     </div>
 
@@ -42,34 +51,62 @@
                         <h3 class="text-xl font-bold text-[#3E2F28] mb-1">{{ donkey.nombre }}</h3>
                         <p class="text-stone-400 text-xs uppercase tracking-widest mb-4">{{ donkey.race }}</p>
                         
-                        <div class="flex justify-between items-center pt-4 border-t border-stone-50">
-                            {# SI ES ADMIN: VE EDITAR Y VER #}
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <div class="flex gap-3">
-                                    <a href="{{ path('app_donkey_show', {'id': donkey.id}) }}" class="text-stone-400 hover:text-[#8B5E3C] transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor font-bold">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                        </svg>
+                        {# Info Técnica #}
+                        <div class="grid grid-cols-3 gap-4 py-6 border-y border-stone-50 mb-8">
+                            <div class="text-center">
+                                <span class="block text-stone-300 text-[9px] font-black uppercase mb-1">Edad</span>
+                                <span class="text-stone-800 font-bold text-sm">{{ donkey.years }}a</span>
+                            </div>
+                            <div class="text-center border-x border-stone-50">
+                                <span class="block text-stone-300 text-[9px] font-black uppercase mb-1">Peso</span>
+                                <span class="text-stone-800 font-bold text-sm">{{ donkey.kilogram }}kg</span>
+                            </div>
+                            <div class="text-center">
+                                <span class="block text-stone-300 text-[9px] font-black uppercase mb-1">Carga</span>
+                                <span class="text-stone-800 font-bold text-sm">{{ donkey.maxWeightr }}kg</span>
+                            </div>
+                        </div>
+
+                        {# Acciones Symfony #}
+                        <div class="mt-auto space-y-3">
+                            <div class="flex gap-2">
+                                <a href="{{ path('app_donkey_show', {'id': donkey.id}) }}" class="flex-1 py-4 bg-stone-100 text-stone-800 font-black text-[10px] uppercase tracking-widest hover:bg-stone-200 transition-all rounded-xl text-center">
+                                    Ver Perfil
+                                </a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}" class="px-5 py-4 border border-stone-100 text-stone-300 hover:text-[#764F32] transition-all rounded-xl">
+                                        ⚙️
                                     </a>
-                                    <a href="{{ path('app_donkey_edit', {'id': donkey.id}) }}" class="text-stone-400 hover:text-[#8B5E3C] transition-colors">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                        </svg>
-                                    </a>
-                                </div>
+                                {% endif %}
+                            </div>
+
+                            {% if app.user %}
+                                <a href="{{ path('app_donkey_show', {'id': donkey.id}) }}#apadrinar" class="block w-full py-4 bg-[#764F32] text-white font-black text-[10px] uppercase tracking-widest rounded-xl hover:bg-stone-800 transition-all shadow-md text-center">
+                                    ✨ Apadrinar a {{ donkey.nombre }}
+                                </a>
                             {% else %}
-                                {# SI ES CLIENTE: VE BOTÓN ADOPTAR #}
-                                <a href="{{ path('app_donkey_show', {'id': donkey.id}) }}" class="w-full text-center py-2 bg-[#4A90A4] hover:bg-[#3a7181] text-white rounded-xl text-xs font-bold transition-all">
-                                    Conocer y Adoptar
+                                <a href="{{ path('app_login') }}" class="block w-full py-4 border-2 border-dashed border-stone-200 text-stone-400 font-black text-[10px] uppercase tracking-widest rounded-xl hover:border-[#764F32] hover:text-[#764F32] transition-all text-center">
+                                    Inicia sesión para colaborar
                                 </a>
                             {% endif %}
                         </div>
                     </div>
                 </div>
             {% else %}
-                <p class="col-span-full text-center text-stone-400 py-20 italic">No hay burros registrados en el establo.</p>
+                <div class="col-span-full text-center py-20 bg-white rounded-3xl border border-dashed border-stone-200">
+                    <p class="text-stone-400 italic">No hay burros registrados en este momento.</p>
+                </div>
             {% endfor %}
+        </div>
+    </section>
+
+    {# --- SECCIÓN INFORMATIVA INFERIOR --- #}
+    <div class="bg-stone-900 py-16 text-white text-center mt-12">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-2xl font-bold mb-4 italic text-[#95d5b2]">Compromiso con el Bienestar</h2>
+            <p class="text-stone-400 leading-relaxed text-sm">
+                Cada apadrinamiento nos permite asegurar que nuestros burros tengan la mejor vida posible en Granada.
+            </p>
         </div>
     </div>
 </div>
