@@ -18,18 +18,9 @@ class DonkeyType extends AbstractType
             ->add('years')
             ->add('race')
             ->add('kilogram')
-            ->add('createdAt', null, [
-                'widget' => 'single_text',
-            ])
-            ->add('updatedAt')
-            ->add('deletedAt')
             ->add('disponible')
             ->add('maxWeightr')
             ->add('photoUrl')
-            ->add('reserve', EntityType::class, [
-                'class' => DonkeyReserve::class,
-                'choice_label' => 'id',
-            ])
         ;
     }
 

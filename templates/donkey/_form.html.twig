@@ -1,4 +1,69 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
+    
+    {# --- FILA 1: TEXTOS PRINCIPALES --- #}
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Nombre del Burro</label>
+            {{ form_widget(form.nombre, {'attr': {
+                'class': 'w-full px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                'placeholder': 'Ej: Platero'
+            }}) }}
+        </div>
+        
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Raza / Linaje</label>
+            {{ form_widget(form.race, {'attr': {
+                'class': 'w-full px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                'placeholder': 'Ej: Andaluz'
+            }}) }}
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">URL de la Foto</label>
+            {{ form_widget(form.photoUrl, {'attr': {
+                'class': 'w-full px-4 py-3 rounded-xl border-2 border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                'placeholder': 'https://...'
+            }}) }}
+        </div>
+    </div>
+
+    {# --- FILA 2: MÉTRICAS Y DISPONIBILIDAD --- #}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Edad (años)</label>
+            {{ form_widget(form.years, {'attr': {
+                'class': 'w-full px-4 py-3 rounded-xl border-2 border-stone-100 bg-stone-50/50 text-stone-800 font-bold focus:border-[#8B5E3C] focus:bg-white outline-none transition-all'
+            }}) }}
+        </div>
+        
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Peso (kg)</label>
+            {{ form_widget(form.kilogram, {'attr': {
+                'class': 'w-full px-4 py-3 rounded-xl border-2 border-stone-100 bg-stone-50/50 text-stone-800 font-bold focus:border-[#8B5E3C] focus:bg-white outline-none transition-all'
+            }}) }}
+        </div>
+
+        <div class="flex flex-col gap-2">
+            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Carga Máx (kg)</label>
+            {{ form_widget(form.maxWeightr, {'attr': {
+                'class': 'w-full px-4 py-3 rounded-xl border-2 border-stone-100 bg-stone-50/50 text-stone-800 font-bold focus:border-[#8B5E3C] focus:bg-white outline-none transition-all'
+            }}) }}
+        </div>
+
+        {# EL BOTÓN AZUL SUAVE DE DISPONIBILIDAD #}
+        <div class="flex items-center justify-between px-5 py-3 bg-[#EBF4F6] rounded-xl border border-[#4A90A4]/10 h-[52px] group transition-colors">
+            <span class="text-[9px] font-bold uppercase tracking-widest text-[#4A90A4]">¿Disponible?</span>
+            {{ form_widget(form.disponible, {'attr': {
+                'class': 'w-5 h-5 text-[#4A90A4] border-none rounded focus:ring-0 cursor-pointer accent-[#4A90A4]'
+            }}) }}
+        </div>
+    </div>
+
+    {# --- BOTÓN DE ACCIÓN MARRÓN COMPACTO --- #}
+    <div class="pt-4 flex justify-center">
+        <button class="w-full max-w-md py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold text-[10px] uppercase tracking-[0.3em] rounded-2xl transition-all duration-300 shadow-lg shadow-amber-900/20 transform hover:-translate-y-0.5 active:scale-95">
+            {{ button_label|default('Registrar en el Establo Virtual') }}
+        </button>
+    </div>
+
 {{ form_end(form) }}
