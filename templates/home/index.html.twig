@@ -13,7 +13,7 @@
                 <div class="absolute inset-0 bg-stone-900/40 transition-opacity duration-500 group-hover:bg-stone-900/30"></div>
                 <div class="relative z-10 flex flex-col items-start gap-4">
                     <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest border border-white/30">Vista General</span>
-                    <h1 class="text-3xl md:text-5xl font-serif font-extrabold tracking-tight leading-tight drop-shadow-sm">¡Hola, Administrador! 👋</h1>
+                    <h1 class="text-3xl md:text-5xl font-serif font-extrabold tracking-tight leading-tight drop-shadow-sm">¡Bienvenido de nuevo, {{ app.user.nombre|default('Administrador') }}! 👋</h1>
                     <p class="text-white font-medium text-lg max-w-xl drop-shadow-sm leading-relaxed">Gestiona las reservas y supervisa el estado de nuestros burros.</p>
                 </div>
             </div>

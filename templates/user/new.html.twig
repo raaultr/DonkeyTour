@@ -7,10 +7,10 @@
     {# Cabecera #}
     <div class="flex items-center justify-between mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight">Crear Nuevo {{ type }}</h1>
+            <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight">Crear Nuevo {{ type|capitalize }}</h1>
             <p class="text-stone-500 mt-1">Completa los campos para registrar el alta en el sistema.</p>
         </div>
-        <a href="{{ app.request.headers.get('referer')|default(path('app_user_index')) }}" 
+        <a href="{{ app.request.headers.get('referer')|default(path('app_user_employees')) }}" 
            class="group flex items-center gap-2 text-sm font-bold text-stone-400 hover:text-[#8B5E3C] transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 transform group-hover:-translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -24,7 +24,7 @@
         {{ form_start(form, {'attr': {'class': 'space-y-6', 'novalidate': 'novalidate'}}) }}
             
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {# Nombre Completo (Ancho completo) #}
+                {# Nombre Completo #}
                 <div class="md:col-span-2">
                     <label class="block text-sm font-bold text-stone-700 mb-2">Nombre Completo</label>
                     {{ form_widget(form.nombre, {'attr': {'class': 'w-full px-5 py-4 rounded-2xl bg-stone-50 border-transparent focus:border-[#8B5E3C] focus:bg-white focus:ring-0 transition-all placeholder-stone-300', 'placeholder': 'Ej. Alejandro Magno'}}) }}
@@ -59,7 +59,20 @@
                     {{ form_errors(form.telefono) }}
                 </div>
 
-                {# Checkbox de Contrato (Ancho completo o alineado) #}
+                {# CAMPO CONDICIONAL: Nº SEGURIDAD SOCIAL #}
+                {% if form.social_security is defined %}
+                    <div class="md:col-span-2">
+                        <label class="block text-sm font-bold text-stone-700 mb-2">Número de Seguridad Social</label>
+                        {{ form_widget(form.social_security, {'attr': {'class': 'w-full px-5 py-4 rounded-2xl bg-[#4A90A4]/5 border-transparent focus:border-[#4A90A4] focus:bg-white focus:ring-0 transition-all font-mono', 'placeholder': 'Ej. 28 12345678 90'}}) }}
+                        <p class="mt-2 text-[11px] text-[#4A90A4] font-medium flex items-center gap-1">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                            Este campo es obligatorio para el alta de empleados.
+                        </p>
+                        {{ form_errors(form.social_security) }}
+                    </div>
+                {% endif %}
+
+                {# Checkbox de Contrato #}
                 <div class="md:col-span-2 flex items-center p-4 bg-stone-50 rounded-2xl border border-dashed border-stone-200 mt-2">
                     <div class="flex items-center h-5">
                         {{ form_widget(form.contratoFirmado, {'attr': {'class': 'w-5 h-5 text-[#8B5E3C] border-stone-300 rounded focus:ring-[#8B5E3C] focus:ring-offset-0'}}) }}
@@ -76,7 +89,7 @@
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 opacity-70 group-hover:opacity-100 transition-opacity" viewBox="0 0 20 20" fill="currentColor">
                     <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                 </svg>
-                Guardar {{ type }}
+                Guardar {{ type|capitalize }}
             </button>
         {{ form_end(form) }}
     </div>
