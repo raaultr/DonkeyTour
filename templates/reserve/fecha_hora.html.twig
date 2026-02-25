@@ -1,0 +1,69 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservar — Fecha y Hora · DonkeyTour{% endblock %}
+
+{% block client_body %}
+<div class="max-w-3xl mx-auto px-6 py-16">
+
+    {{ include('reserve/_wizard_progress.html.twig') }}
+
+    {% for type, messages in app.flashes %}
+        {% for msg in messages %}
+            <div class="mb-6 px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="text-center mb-12">
+        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">Paso 2 de 5</span>
+        <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-2">¿Cuándo quieres venir?</h1>
+        <p class="text-stone-400 mt-2">Selecciona la fecha y la hora que mejor te vengan.</p>
+    </div>
+
+    {# Resumen del servicio elegido #}
+    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-6 mb-8 flex items-center gap-5 shadow-sm">
+        <div class="w-14 h-14 rounded-2xl bg-[#8B5E3C]/10 text-[#8B5E3C] flex items-center justify-center text-2xl shrink-0">🎯</div>
+        <div>
+            <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Servicio seleccionado</p>
+            <p class="text-lg font-bold text-[#3E2F28]">{{ service.type|capitalize }} — {{ service.basePrice }}€</p>
+            <p class="text-xs text-stone-400">Duración: {{ service.duration ? service.duration|date('H:i') : '—' }}h · Máx. {{ service.maxAphor }} personas</p>
+        </div>
+    </div>
+
+    {# Formulario de fecha #}
+    <form method="post" action="{{ path('app_reserve_step2_post') }}">
+        <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)]">
+
+            <label for="datetime" class="block text-[#8B5E3C] text-xs font-bold uppercase tracking-widest mb-3 ml-1">
+                Fecha y hora de la reserva
+            </label>
+            <input type="datetime-local"
+                   id="datetime"
+                   name="datetime"
+                   required
+                   min="{{ 'now'|date('Y-m-d\\TH:i') }}"
+                   class="w-full bg-stone-50 border-2 border-stone-100 text-[#3E2F28] font-medium rounded-2xl px-5 py-4 text-lg
+                          focus:outline-none focus:ring-0 focus:border-[#4A90A4] transition-all duration-300
+                          hover:bg-stone-100 focus:bg-white shadow-inner">
+
+            <p class="mt-3 text-xs text-stone-400 ml-1">Las reservas se realizan como mínimo con 24h de antelación.</p>
+
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <a href="{{ path('app_reserve_step1') }}"
+                   class="text-stone-500 font-bold hover:text-[#3E2F28] transition-colors text-sm flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    Volver a servicios
+                </a>
+
+                <button type="submit"
+                        class="px-10 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300
+                               shadow-[0_10px_20px_rgba(139,94,60,0.3)] transform hover:-translate-y-0.5 flex items-center gap-2">
+                    Continuar
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+{% endblock %}

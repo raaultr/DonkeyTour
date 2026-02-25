@@ -16,28 +16,33 @@ class DonkeyRepository extends ServiceEntityRepository
         parent::__construct($registry, Donkey::class);
     }
 
-    //    /**
-    //     * @return Donkey[] Returns an array of Donkey objects
-    //     */
-    //    public function findByExampleField($value): array
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->orderBy('d.id', 'ASC')
-    //            ->setMaxResults(10)
-    //            ->getQuery()
-    //            ->getResult()
-    //        ;
-    //    }
+    /**
+     * Encuentra burros disponibles para una fecha concreta.
+     * Excluye los que ya tienen reserva ese día.
+     *
+     * @return Donkey[]
+     */
+    public function findAvailableForDate(\DateTime $date): array
+    {
+        $dayStart = (clone $date)->setTime(0, 0, 0);
+        $dayEnd   = (clone $date)->setTime(23, 59, 59);
 
-    //    public function findOneBySomeField($value): ?Donkey
-    //    {
-    //        return $this->createQueryBuilder('d')
-    //            ->andWhere('d.exampleField = :val')
-    //            ->setParameter('val', $value)
-    //            ->getQuery()
-    //            ->getOneOrNullResult()
-    //        ;
-    //    }
+        return $this->createQueryBuilder('d')
+            ->where('d.disponible = true')
+            ->andWhere('d.deletedAt IS NULL')
+            ->andWhere(
+                'd.id NOT IN (
+                    SELECT IDENTITY(r.selectedDonkey)
+                    FROM App\Entity\Reserve r
+                    WHERE r.reserveDate BETWEEN :dayStart AND :dayEnd
+                    AND r.deletedAt IS NULL
+                    AND r.selectedDonkey IS NOT NULL
+                )'
+            )
+            ->setParameter('dayStart', $dayStart)
+            ->setParameter('dayEnd', $dayEnd)
+            ->orderBy('d.nombre', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

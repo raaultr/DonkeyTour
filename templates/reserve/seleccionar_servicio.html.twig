@@ -1,0 +1,81 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservar — Seleccionar Servicio · DonkeyTour{% endblock %}
+
+{% block client_body %}
+<div class="max-w-6xl mx-auto px-6 py-16">
+
+    {# ---------- Progreso ---------- #}
+    {{ include('reserve/_wizard_progress.html.twig') }}
+
+    {# ---------- Flash messages ---------- #}
+    {% for type, messages in app.flashes %}
+        {% for msg in messages %}
+            <div class="mb-6 px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# ---------- Título ---------- #}
+    <div class="text-center mb-12">
+        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">Paso 1 de 5</span>
+        <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-2">¿Qué experiencia quieres vivir?</h1>
+        <p class="text-stone-400 mt-2 max-w-lg mx-auto">Selecciona el servicio que más te interese. Cada uno incluye un paseo con nuestros burros.</p>
+    </div>
+
+    {# ---------- Grid de servicios ---------- #}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {% for service in services %}
+            <form method="post" action="{{ path('app_reserve_step1_post') }}">
+                <input type="hidden" name="service_id" value="{{ service.id }}">
+                <button type="submit" class="w-full text-left bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 border border-stone-100 group cursor-pointer">
+
+                    {# Imagen #}
+                    <div class="relative h-52 overflow-hidden">
+                        <img src="{{ asset('img/burroBanner.png') }}"
+                             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                             alt="{{ service.type }}">
+                        <div class="absolute top-4 left-4">
+                            <span class="bg-[#764F32]/90 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase tracking-wider">
+                                {{ service.type }}
+                            </span>
+                        </div>
+                        <div class="absolute bottom-4 right-4 bg-white/95 backdrop-blur-sm px-4 py-2 rounded-2xl shadow-md border border-stone-50">
+                            <span class="text-[#764F32] font-bold text-xl">{{ service.basePrice }}€</span>
+                            <span class="text-stone-400 text-[10px] font-medium block -mt-1 uppercase">/ persona</span>
+                        </div>
+                    </div>
+
+                    {# Info #}
+                    <div class="p-6">
+                        <div class="flex items-center gap-4 mb-3 text-stone-400 text-[11px] font-bold uppercase tracking-widest">
+                            <span class="flex items-center gap-1">🕒 {{ service.duration ? service.duration|date('H:i') : '—' }}h</span>
+                            <span class="flex items-center gap-1">👥 Máx. {{ service.maxAphor }}</span>
+                            <span class="flex items-center gap-1">🌍 {{ service.leenguage }}</span>
+                        </div>
+
+                        <h3 class="text-xl font-bold text-stone-800 mb-2 group-hover:text-[#764F32] transition-colors">
+                            {{ service.type|capitalize }}
+                        </h3>
+
+                        <p class="text-stone-500 text-sm leading-relaxed line-clamp-3">
+                            {{ service.description|length > 120 ? service.description|slice(0, 120) ~ '…' : service.description }}
+                        </p>
+
+                        <div class="mt-5 flex items-center justify-center gap-2 py-3 border-t border-stone-100 text-[#8B5E3C] font-bold text-xs uppercase tracking-widest group-hover:text-[#764F32]">
+                            Seleccionar este servicio
+                            <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </button>
+            </form>
+        {% else %}
+            <div class="col-span-full text-center py-20">
+                <div class="text-6xl mb-4">🐴</div>
+                <p class="text-stone-400 font-medium">No hay servicios disponibles en este momento.</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

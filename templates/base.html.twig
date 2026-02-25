@@ -38,7 +38,7 @@
                         <span>Home</span>
                     </a>
 
-                    <a href="#" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#4A90A4] transition-all duration-300 group">
+                    <a href="{{ path('app_admin_reserve_index') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ app.request.attributes.get('_route') starts with 'app_admin_reserve' ? 'text-[#4A90A4] bg-[#4A90A4]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#4A90A4]' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 group-hover:scale-110 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
                         <span>Reservas Globales</span>
                     </a>
@@ -102,6 +102,9 @@
                         <a href="#sobre-nosotros" class="text-stone-500 font-medium hover:text-[#4A90A4] transition-colors">Sobre Nosotros</a>
                         <a href="{{ path('app_service_index') }}" class="text-stone-500 font-medium hover:text-[#4A90A4] transition-colors">Servicios</a>
                         <a href="{{ path('app_donkey_index') }}" class="text-stone-500 font-medium hover:text-[#4A90A4] transition-colors">Nuestros Burros</a>
+                        {% if app.user %}
+                            <a href="{{ path('app_reserve_step1') }}" class="text-white bg-[#8B5E3C] hover:bg-[#764f32] px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-sm">Reservar</a>
+                        {% endif %}
                     </nav>
 
                     <div class="flex items-center gap-6">
@@ -109,7 +112,7 @@
                             <div class="flex items-center gap-3">
                                 <div class="text-right hidden md:block">
                                     <p class="text-sm font-bold text-[#3E2F28]">{{ app.user.nombre | default('Viajero') }}</p>
-                                    <a href="#" class="text-xs text-[#4A90A4] font-medium hover:underline">Mis Reservas</a>
+                                    <a href="{{ path('app_reserve_my') }}" class="text-xs text-[#4A90A4] font-medium hover:underline">Mis Reservas</a>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-[#8B5E3C]/10 text-[#8B5E3C] border border-[#8B5E3C]/20 flex items-center justify-center font-bold">
                                     {{ app.user.nombre|default('V')|first|upper }}
