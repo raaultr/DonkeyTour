@@ -42,7 +42,7 @@ final class UserController extends AbstractController
         $allUsers = $userRepository->findAll();
         
         $clients = array_filter($allUsers, function($user) {
-            return in_array('ROLE_CLIENTE', $user->getRoles());
+            return in_array('ROLE_CLIENT', $user->getRoles());
         });
 
         return $this->render('user/index.html.twig', [
@@ -51,71 +51,69 @@ final class UserController extends AbstractController
             'type' => 'client',
         ]);
     }
-
+    
     #[Route(name: 'app_user_index', methods: ['GET'])]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('user/index.html.twig', [
             'users' => $userRepository->findAll(),
-            'title' => 'Todos los Usuarios', // Añadido
+            'title' => 'Todos los Usuarios',
             'type' => 'user',
         ]);
     }
 
     #[Route('/new/{type}', name: 'app_user_new', methods: ['GET', 'POST'], defaults: ['type' => 'user'])]
-public function new(
-    Request $request, 
-    string $type, 
-    EntityManagerInterface $entityManager,
-    UserPasswordHasherInterface $passwordHasher
-): Response {
-    // 1. Instanciamos la clase hija real según la herencia
-    $user = match($type) {
-        'employee' => new Employee(),
-        'client'   => new Client(),
-        'admin'    => new Admin(),
-        default    => new User(),
-    };
-    
-    // 2. Configuramos el label para la vista
-    $label = match($type) {
-        'employee' => 'Empleado',
-        'client'   => 'Cliente',
-        default    => 'Usuario',
-    };
-
-    // 3. Asignamos roles (opcional si tus clases hijas ya lo hacen en el constructor)
-    if ($type === 'employee') $user->setRoles(['ROLE_EMPLOYEE']);
-    if ($type === 'client') $user->setRoles(['ROLE_CLIENTE']);
-
-    $form = $this->createForm(UserType::class, $user);
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Cifrar contraseña
-        $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
-        $user->setPassword($hashedPassword);
-        $user->setCreatedAt(new \DateTimeImmutable());
-
-        $entityManager->persist($user);
-        $entityManager->flush();
-
-        $this->addFlash('success', "¡$label creado correctamente!");
-
-        // Redirigir a la tabla correspondiente
-        $route = match($type) {
-            'employee' => 'app_user_employees',
-            'client'   => 'app_user_clients',
-            default    => 'app_user_index'
+    public function new(
+        Request $request, 
+        string $type, 
+        EntityManagerInterface $entityManager,
+        UserPasswordHasherInterface $passwordHasher
+    ): Response {
+        $user = match($type) {
+            'employee' => new Employee(),
+            'client'   => new Client(),
+            'admin'    => new Admin(),
+            default    => new User(),
         };
-        return $this->redirectToRoute($route);
-    }
+        
+        // 2. Configuramos el label para la vista
+        $label = match($type) {
+            'employee' => 'Empleado',
+            'client'   => 'Cliente',
+            default    => 'Usuario',
+        };
 
-    return $this->render('user/new.html.twig', [
-        'form' => $form,
-        'type' => $label,
-    ]);
-}
+        if ($type === 'employee') $user->setRoles(['ROLE_EMPLOYEE']);
+        if ($type === 'client') $user->setRoles(['ROLE_CLIENT']);
+
+        $form = $this->createForm(UserType::class, $user);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Cifrar contraseña
+            $hashedPassword = $passwordHasher->hashPassword($user, $form->get('password')->getData());
+            $user->setPassword($hashedPassword);
+            $user->setCreatedAt(new \DateTimeImmutable());
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $this->addFlash('success', "¡$label creado correctamente!");
+
+            // Redirigir a la tabla correspondiente
+            $route = match($type) {
+                'employee' => 'app_user_employees',
+                'client'   => 'app_user_clients',
+                default    => 'app_user_index'
+            };
+            return $this->redirectToRoute($route);
+        }
+
+        return $this->render('user/new.html.twig', [
+            'form' => $form,
+            'type' => $label,
+        ]);
+    }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
     public function show(User $user): Response
