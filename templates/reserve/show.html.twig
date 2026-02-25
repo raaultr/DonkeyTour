@@ -1,53 +1,104 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Detalle de Reserva — DonkeyTour{% endblock %}
-{% block page_title %}Detalle de Reserva{% endblock %}
+{% block title %}Reserva #{{ reserve.id }} · DonkeyTour{% endblock %}
 
 {% block client_body %}
-<div class="animate-fade-in-down max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-    
-    <div class="text-center mb-8">
-        <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-sm">Reserva #{{ reserve.id }}</span>
-        <h1 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Detalles de la Reserva</h1>
-    </div>
+<div class="max-w-3xl mx-auto px-6 py-16">
 
-    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)] mb-8">
-        <table class="w-full text-left">
-            <tbody class="text-stone-600 text-lg">
-                <tr class="border-b border-stone-100">
-                    <th class="py-4 font-bold text-[#3E2F28] w-1/3">ID</th>
-                    <td class="py-4">{{ reserve.id }}</td>
-                </tr>
-                <tr class="border-b border-stone-100">
-                    <th class="py-4 font-bold text-[#3E2F28]">Cliente</th>
-                    <td class="py-4">{{ reserve.clientName }}</td>
-                </tr>
-                <tr class="border-b border-stone-100">
-                    <th class="py-4 font-bold text-[#3E2F28]">Fecha</th>
-                    <td class="py-4">{{ reserve.date ? reserve.date|date('Y-m-d H:i') : '' }}</td>
-                </tr>
-                <tr>
-                    <th class="py-4 font-bold text-[#3E2F28]">Estado</th>
-                    <td class="py-4">
-                        <span class="px-3 py-1 bg-amber-50 text-amber-600 rounded-full text-sm font-bold uppercase tracking-wider">
-                            {{ reserve.status }}
-                        </span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <div class="flex justify-between items-center gap-4">
-        <a href="{{ path('app_reserve_index') }}" class="inline-flex items-center gap-2 text-stone-500 font-bold hover:text-[#3E2F28] transition-colors">
-            <span aria-hidden="true">&larr;</span> Volver al listado
+    <div class="mb-8">
+        <a href="{{ path('app_reserve_my') }}" class="text-stone-500 font-bold hover:text-[#3E2F28] transition-colors text-sm flex items-center gap-1 mb-4">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+            Volver a mis reservas
         </a>
-        
-        <div class="flex gap-4">
-            <a href="{{ path('app_reserve_edit', {'id': reserve.id}) }}" class="px-6 py-3 bg-stone-100 hover:bg-stone-200 text-[#3E2F28] font-bold rounded-2xl transition-all duration-300">
-                Editar
-            </a>
-            {{ include('reserve/_delete_form.html.twig') }}
+        <div class="flex items-center gap-4">
+            <h1 class="text-3xl font-bold text-[#3E2F28]">Reserva #{{ reserve.id }}</h1>
+            <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                         {{ reserve.state ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-500 border border-red-100' }}">
+                {{ reserve.state ? 'Activa' : 'Cancelada' }}
+            </span>
+        </div>
+    </div>
+
+    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-10 shadow-[0_20px_50px_rgba(139,94,60,0.05)] space-y-7">
+
+        {# Servicio #}
+        <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
+            <div class="w-12 h-12 rounded-xl bg-[#8B5E3C]/10 text-[#8B5E3C] flex items-center justify-center text-xl shrink-0">🎯</div>
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Servicio</p>
+                <p class="font-bold text-[#3E2F28] text-lg">{{ reserve.service.type|capitalize }}</p>
+                <p class="text-xs text-stone-400">{{ reserve.service.basePrice }}€ / persona · {{ reserve.service.duration ? reserve.service.duration|date('H:i') : '—' }}h</p>
+            </div>
+        </div>
+
+        {# Fecha #}
+        <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
+            <div class="w-12 h-12 rounded-xl bg-[#4A90A4]/10 text-[#4A90A4] flex items-center justify-center text-xl shrink-0">📅</div>
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Fecha y hora</p>
+                <p class="font-bold text-[#3E2F28] text-lg">{{ reserve.reserveDate|date('d/m/Y') }}</p>
+                <p class="text-xs text-stone-400">Hora: {{ reserve.reserveDate|date('H:i') }}h</p>
+            </div>
+        </div>
+
+        {# Burro #}
+        <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
+            <div class="w-12 h-12 rounded-xl bg-[#764F32]/10 text-[#764F32] flex items-center justify-center text-xl shrink-0">🐴</div>
+            <div>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Burro asignado</p>
+                {% if reserve.selectedDonkey %}
+                    <p class="font-bold text-[#3E2F28] text-lg">{{ reserve.selectedDonkey.nombre }}</p>
+                    <p class="text-xs text-stone-400">{{ reserve.selectedDonkey.race }} · {{ reserve.selectedDonkey.years ?? '—' }} años</p>
+                {% else %}
+                    <p class="font-bold text-[#3E2F28]">No asignado</p>
+                {% endif %}
+            </div>
+        </div>
+
+        {# Participantes #}
+        <div>
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Participantes</h3>
+
+            {% if details.booker is defined %}
+                <div class="bg-[#8B5E3C]/5 rounded-2xl p-5 border border-[#8B5E3C]/10 mb-3">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <p class="font-bold text-[#3E2F28]">{{ details.booker.nombre }}</p>
+                            <p class="text-xs text-stone-400">{{ details.booker.nif }} · {{ details.booker.telefono }} · {{ details.booker.email }}</p>
+                        </div>
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] bg-[#8B5E3C]/10 px-3 py-1 rounded-full">Titular</span>
+                    </div>
+                </div>
+            {% endif %}
+
+            {% if details.companions is defined and details.companions|length > 0 %}
+                {% for comp in details.companions %}
+                    <div class="bg-stone-50 rounded-2xl p-5 border border-stone-100 mb-3">
+                        <p class="font-bold text-[#3E2F28]">{{ comp.nombre }}</p>
+                        <p class="text-xs text-stone-400">{{ comp.nif ?: '—' }} · {{ comp.telefono ?: '—' }}</p>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        {# Pago #}
+        <div class="flex items-center gap-3 text-amber-600 bg-amber-50 px-5 py-4 rounded-2xl border border-amber-100 text-sm">
+            <svg class="w-5 h-5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span class="font-bold">Pago pendiente — La pasarela de pago aún no está disponible.</span>
+        </div>
+
+        {# Total #}
+        {% set companionCount = details.companions is defined ? details.companions|length : 0 %}
+        <div class="bg-gradient-to-r from-[#8B5E3C] to-[#764F32] rounded-2xl p-6 text-white">
+            <div class="flex items-center justify-between">
+                <div>
+                    <p class="text-white/70 text-xs font-bold uppercase tracking-widest">Total estimado</p>
+                    <p class="text-3xl font-bold mt-1">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
+                </div>
+                <div class="text-right text-white/70 text-xs">
+                    <p>{{ 1 + companionCount }} persona{{ (1 + companionCount) != 1 ? 's' : '' }} × {{ reserve.service.basePrice }}€</p>
+                </div>
+            </div>
         </div>
     </div>
 </div>

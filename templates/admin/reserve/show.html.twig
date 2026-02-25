@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reserva #{{ reserve.id }} · DonkeyTour Admin{% endblock %}
+{% block page_title %}Detalle de Reserva #{{ reserve.id }}{% endblock %}
+
+{% block body %}
+<div class="space-y-8 max-w-4xl">
+
+    {% for type, messages in app.flashes %}
+        {% for msg in messages %}
+            <div class="px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# Volver #}
+    <a href="{{ path('app_admin_reserve_index') }}" class="text-stone-500 font-bold hover:text-[#3E2F28] transition-colors text-sm flex items-center gap-1 w-fit">
+        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+        Volver al listado
+    </a>
+
+    {# Cabecera #}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+            <div class="flex items-center gap-3">
+                <h1 class="text-2xl font-bold text-[#3E2F28]">Reserva #{{ reserve.id }}</h1>
+                <span class="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider
+                             {{ reserve.state ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-500 border border-red-100' }}">
+                    {{ reserve.state ? 'Activa' : 'Cancelada' }}
+                </span>
+            </div>
+            <p class="text-stone-400 text-xs mt-1">Creada el {{ reserve.createdAt ? reserve.createdAt|date('d/m/Y H:i') : '—' }}</p>
+        </div>
+
+        {# Botón cambiar estado #}
+        <form method="post" action="{{ path('app_admin_reserve_toggle', {'id': reserve.id}) }}">
+            <input type="hidden" name="_token" value="{{ csrf_token('toggle' ~ reserve.id) }}">
+            <button type="submit"
+                    class="px-5 py-2.5 rounded-2xl font-bold text-sm transition-all border-2
+                           {{ reserve.state ? 'border-red-200 text-red-600 hover:bg-red-50' : 'border-green-200 text-green-600 hover:bg-green-50' }}">
+                {{ reserve.state ? 'Cancelar reserva' : 'Reactivar reserva' }}
+            </button>
+        </form>
+    </div>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+        {# ---- Info principal ---- #}
+        <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-6 shadow-sm space-y-5">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Datos de la reserva</h3>
+
+            <div class="space-y-4">
+                <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-4 border border-stone-100">
+                    <div class="w-10 h-10 rounded-xl bg-[#8B5E3C]/10 text-[#8B5E3C] flex items-center justify-center text-lg shrink-0">🎯</div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Servicio</p>
+                        <p class="font-bold text-[#3E2F28]">{{ reserve.service.type|capitalize }}</p>
+                        <p class="text-xs text-stone-400">{{ reserve.service.basePrice }}€/pers · {{ reserve.service.duration ? reserve.service.duration|date('H:i') : '—' }}h · Máx {{ reserve.service.maxAphor }} pers.</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-4 border border-stone-100">
+                    <div class="w-10 h-10 rounded-xl bg-[#4A90A4]/10 text-[#4A90A4] flex items-center justify-center text-lg shrink-0">📅</div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Fecha y hora</p>
+                        <p class="font-bold text-[#3E2F28]">{{ reserve.reserveDate|date('d/m/Y') }} a las {{ reserve.reserveDate|date('H:i') }}h</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-4 border border-stone-100">
+                    <div class="w-10 h-10 rounded-xl bg-[#764F32]/10 text-[#764F32] flex items-center justify-center text-lg shrink-0">🐴</div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Burro asignado</p>
+                        {% if reserve.selectedDonkey %}
+                            <p class="font-bold text-[#3E2F28]">{{ reserve.selectedDonkey.nombre }}</p>
+                            <p class="text-xs text-stone-400">{{ reserve.selectedDonkey.race }} · {{ reserve.selectedDonkey.years ?? '—' }} años · {{ reserve.selectedDonkey.kilogram }}kg</p>
+                        {% else %}
+                            <p class="font-bold text-stone-400">No asignado</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            {# Pago #}
+            {% if reserve.pay %}
+                <div class="flex items-center gap-4 bg-green-50 rounded-2xl p-4 border border-green-100">
+                    <div class="w-10 h-10 rounded-xl bg-green-100 text-green-600 flex items-center justify-center text-lg shrink-0">💳</div>
+                    <div>
+                        <p class="text-[10px] font-bold uppercase tracking-widest text-green-600">Pago</p>
+                        <p class="font-bold text-green-700">{{ reserve.pay.total }}€ — {{ reserve.pay.method }}</p>
+                        <p class="text-xs text-green-500">{{ reserve.pay.state ? 'Pagado' : 'Pendiente' }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="flex items-center gap-3 text-amber-600 bg-amber-50 px-4 py-3 rounded-2xl border border-amber-100 text-xs font-bold">
+                    ⚠️ Pago no registrado — Pasarela no disponible
+                </div>
+            {% endif %}
+
+            {# Total #}
+            {% set companionCount = details.companions is defined ? details.companions|length : 0 %}
+            <div class="bg-gradient-to-r from-[#3E2F28] to-[#5a443a] rounded-2xl p-5 text-white">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">Total estimado</p>
+                        <p class="text-2xl font-bold mt-0.5">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
+                    </div>
+                    <p class="text-white/60 text-xs">{{ 1 + companionCount }} pers. × {{ reserve.service.basePrice }}€</p>
+                </div>
+            </div>
+        </div>
+
+        {# ---- Participantes ---- #}
+        <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-6 shadow-sm space-y-5">
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400">
+                Participantes ({{ 1 + companionCount }})
+            </h3>
+
+            {# Titular #}
+            {% if details.booker is defined %}
+                <div class="bg-[#8B5E3C]/5 rounded-2xl p-5 border border-[#8B5E3C]/10">
+                    <div class="flex items-center justify-between mb-2">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] bg-[#8B5E3C]/10 px-2.5 py-0.5 rounded-full">Titular</span>
+                    </div>
+                    <p class="font-bold text-[#3E2F28] text-lg">{{ details.booker.nombre }}</p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2 text-xs text-stone-500">
+                        <div><span class="text-stone-400">Email:</span> {{ details.booker.email }}</div>
+                        <div><span class="text-stone-400">NIF:</span> {{ details.booker.nif }}</div>
+                        <div><span class="text-stone-400">Teléfono:</span> {{ details.booker.telefono }}</div>
+                    </div>
+                </div>
+            {% elseif reserve.bookedBy %}
+                <div class="bg-[#8B5E3C]/5 rounded-2xl p-5 border border-[#8B5E3C]/10">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] bg-[#8B5E3C]/10 px-2.5 py-0.5 rounded-full">Titular</span>
+                    <p class="font-bold text-[#3E2F28] text-lg mt-2">{{ reserve.bookedBy.nombre }}</p>
+                    <p class="text-xs text-stone-400 mt-1">{{ reserve.bookedBy.email }} · {{ reserve.bookedBy.nif }} · {{ reserve.bookedBy.telefono }}</p>
+                </div>
+            {% endif %}
+
+            {# Acompañantes #}
+            {% if details.companions is defined and details.companions|length > 0 %}
+                {% for comp in details.companions %}
+                    <div class="bg-stone-50 rounded-2xl p-5 border border-stone-100">
+                        <span class="text-[10px] font-bold uppercase tracking-widest text-stone-400 bg-stone-100 px-2.5 py-0.5 rounded-full">Acompañante {{ loop.index }}</span>
+                        <p class="font-bold text-[#3E2F28] mt-2">{{ comp.nombre }}</p>
+                        <div class="grid grid-cols-2 gap-2 mt-2 text-xs text-stone-500">
+                            <div><span class="text-stone-400">NIF:</span> {{ comp.nif ?: '—' }}</div>
+                            <div><span class="text-stone-400">Teléfono:</span> {{ comp.telefono ?: '—' }}</div>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="text-center py-8 text-stone-300">
+                    <p class="text-sm">Sin acompañantes registrados</p>
+                </div>
+            {% endif %}
+
+            {# Info empleado asignado #}
+            {% if reserve.employee %}
+                <div class="bg-blue-50 rounded-2xl p-5 border border-blue-100 mt-4">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-blue-600">Guía asignado</span>
+                    <p class="font-bold text-[#3E2F28] mt-1">{{ reserve.employee.nombre }}</p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

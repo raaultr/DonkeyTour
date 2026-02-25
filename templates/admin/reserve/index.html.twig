@@ -1,0 +1,104 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservas Globales · DonkeyTour Admin{% endblock %}
+{% block page_title %}Reservas Globales{% endblock %}
+
+{% block body %}
+<div class="space-y-8">
+
+    {% for type, messages in app.flashes %}
+        {% for msg in messages %}
+            <div class="px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    {# Cabecera #}
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div>
+            <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-xs">Administración</span>
+            <h1 class="text-2xl md:text-3xl font-bold text-[#3E2F28] mt-1">Todas las Reservas</h1>
+            <p class="text-stone-400 text-sm mt-1">{{ reserves|length }} reserva{{ reserves|length != 1 ? 's' : '' }} en total</p>
+        </div>
+    </div>
+
+    {# Tabla #}
+    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-6 shadow-sm overflow-x-auto">
+        <table class="w-full text-left border-collapse min-w-[800px]">
+            <thead>
+                <tr>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">ID</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Cliente</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Servicio</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Fecha</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Hora</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Burro</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Personas</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4">Estado</th>
+                    <th class="text-stone-400 text-[10px] font-bold uppercase tracking-widest border-b border-stone-200 pb-4 px-4 text-right">Acciones</th>
+                </tr>
+            </thead>
+            <tbody class="text-stone-600 text-sm">
+                {% for reserve in reserves %}
+                    {% set companionCount = reserve.companionCount %}
+                    {% set bookerName = reserve.bookerName ?: (reserve.bookedBy ? reserve.bookedBy.nombre : '—') %}
+
+                    <tr class="hover:bg-stone-50/50 transition-colors border-b border-stone-100 last:border-0 group">
+                        <td class="py-4 px-4 font-bold text-[#3E2F28]">#{{ reserve.id }}</td>
+                        <td class="py-4 px-4">
+                            <div>
+                                <p class="font-bold text-[#3E2F28]">{{ bookerName }}</p>
+                                {% if reserve.bookedBy %}
+                                    <p class="text-xs text-stone-400">{{ reserve.bookedBy.email }}</p>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="px-2.5 py-1 bg-[#764F32]/10 text-[#764F32] rounded-lg text-xs font-bold uppercase">
+                                {{ reserve.service.type }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 font-medium">{{ reserve.reserveDate|date('d/m/Y') }}</td>
+                        <td class="py-4 px-4">{{ reserve.reserveDate|date('H:i') }}h</td>
+                        <td class="py-4 px-4">
+                            {% if reserve.selectedDonkey %}
+                                <span class="flex items-center gap-1.5">
+                                    🐴 {{ reserve.selectedDonkey.nombre }}
+                                </span>
+                            {% else %}
+                                <span class="text-stone-300">—</span>
+                            {% endif %}
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="flex items-center gap-1">
+                                👥 {{ 1 + companionCount }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4">
+                            <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                         {{ reserve.state ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-500 border border-red-100' }}">
+                                {{ reserve.state ? 'Activa' : 'Cancelada' }}
+                            </span>
+                        </td>
+                        <td class="py-4 px-4 text-right">
+                            <a href="{{ path('app_admin_reserve_show', {'id': reserve.id}) }}"
+                               class="inline-flex items-center gap-1 text-[#4A90A4] font-bold hover:text-cyan-700 transition-colors text-xs uppercase tracking-wider opacity-60 group-hover:opacity-100">
+                                Ver detalle
+                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="9" class="py-16 text-center text-stone-400 font-medium">
+                            <div class="text-5xl mb-4">📋</div>
+                            No hay reservas registradas en el sistema.
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

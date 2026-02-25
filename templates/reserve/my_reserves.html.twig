@@ -1,0 +1,88 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mis Reservas · DonkeyTour{% endblock %}
+
+{% block client_body %}
+<div class="max-w-5xl mx-auto px-6 py-16">
+
+    {% for type, messages in app.flashes %}
+        {% for msg in messages %}
+            <div class="mb-6 px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-10">
+        <div>
+            <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-xs">Mi cuenta</span>
+            <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-1">Mis Reservas</h1>
+        </div>
+        <a href="{{ path('app_reserve_step1') }}"
+           class="px-6 py-3 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all shadow-lg shadow-[#8B5E3C]/20 transform hover:-translate-y-0.5 flex items-center gap-2 text-sm">
+            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+            Nueva Reserva
+        </a>
+    </div>
+
+    {% if reserves|length > 0 %}
+        <div class="space-y-5">
+            {% for reserve in reserves %}
+                {% set companionCount = reserve.companionCount %}
+
+                <a href="{{ path('app_reserve_show', {'id': reserve.id}) }}"
+                   class="block bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-6 shadow-sm
+                          hover:shadow-xl hover:-translate-y-0.5 transition-all duration-300 group">
+
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+
+                        {# Izquierda: info principal #}
+                        <div class="flex items-center gap-5">
+                            <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shrink-0
+                                        {{ reserve.state ? 'bg-green-100 text-green-600' : 'bg-red-100 text-red-500' }}">
+                                {{ reserve.state ? '✅' : '❌' }}
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-3 mb-1">
+                                    <h3 class="text-lg font-bold text-[#3E2F28] group-hover:text-[#8B5E3C] transition-colors">
+                                        {{ reserve.service.type|capitalize }}
+                                    </h3>
+                                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider
+                                                 {{ reserve.state ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-500 border border-red-100' }}">
+                                        {{ reserve.state ? 'Activa' : 'Cancelada' }}
+                                    </span>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-3 text-xs text-stone-400 font-medium">
+                                    <span class="flex items-center gap-1">📅 {{ reserve.reserveDate|date('d/m/Y') }}</span>
+                                    <span class="flex items-center gap-1">🕒 {{ reserve.reserveDate|date('H:i') }}h</span>
+                                    <span class="flex items-center gap-1">🐴 {{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : '—' }}</span>
+                                    <span class="flex items-center gap-1">👥 {{ 1 + companionCount }} persona{{ (1 + companionCount) != 1 ? 's' : '' }}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Derecha: precio + flecha #}
+                        <div class="flex items-center gap-4">
+                            <div class="text-right">
+                                <p class="text-xl font-bold text-[#764F32]">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
+                                <p class="text-[10px] text-stone-400 font-bold uppercase">Total</p>
+                            </div>
+                            <svg class="w-5 h-5 text-stone-300 group-hover:text-[#8B5E3C] group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-24 bg-white/80 rounded-3xl border border-stone-100 shadow-sm">
+            <div class="text-7xl mb-6">🐴</div>
+            <h2 class="text-2xl font-bold text-[#3E2F28] mb-2">Aún no tienes reservas</h2>
+            <p class="text-stone-400 mb-8 max-w-md mx-auto">¡Anímate a reservar tu primera aventura con nuestros burros!</p>
+            <a href="{{ path('app_reserve_step1') }}"
+               class="inline-block px-8 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all shadow-lg shadow-[#8B5E3C]/20">
+                Hacer mi primera reserva
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

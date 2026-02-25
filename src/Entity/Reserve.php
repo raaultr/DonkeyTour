@@ -39,7 +39,7 @@ class Reserve
     private ?ClientReserve $clientReserve = null;
 
     #[ORM\OneToOne(inversedBy: 'reserve', cascade: ['persist', 'remove'])]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Pay $pay = null;
 
     #[ORM\ManyToOne(inversedBy: 'reserves')]
@@ -47,8 +47,16 @@ class Reserve
     private ?Service $service = null;
 
     #[ORM\ManyToOne(inversedBy: 'reserves')]
-    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(nullable: true)]
     private ?Employee $employee = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?User $bookedBy = null;
+
+    #[ORM\ManyToOne]
+    #[ORM\JoinColumn(nullable: true)]
+    private ?Donkey $selectedDonkey = null;
 
     public function getId(): ?int
     {
@@ -156,7 +164,7 @@ class Reserve
         return $this->pay;
     }
 
-    public function setPay(Pay $pay): static
+    public function setPay(?Pay $pay): static
     {
         $this->pay = $pay;
 
@@ -185,5 +193,50 @@ class Reserve
         $this->employee = $employee;
 
         return $this;
+    }
+
+    public function getBookedBy(): ?User
+    {
+        return $this->bookedBy;
+    }
+
+    public function setBookedBy(?User $bookedBy): static
+    {
+        $this->bookedBy = $bookedBy;
+
+        return $this;
+    }
+
+    public function getSelectedDonkey(): ?Donkey
+    {
+        return $this->selectedDonkey;
+    }
+
+    public function setSelectedDonkey(?Donkey $selectedDonkey): static
+    {
+        $this->selectedDonkey = $selectedDonkey;
+
+        return $this;
+    }
+
+    /* ======================================
+     *  Helpers para decodificar details JSON
+     * ====================================== */
+
+    public function getDetailsDecoded(): array
+    {
+        return json_decode($this->details ?? '{}', true) ?: [];
+    }
+
+    public function getCompanionCount(): int
+    {
+        $data = $this->getDetailsDecoded();
+        return isset($data['companions']) ? count($data['companions']) : 0;
+    }
+
+    public function getBookerName(): string
+    {
+        $data = $this->getDetailsDecoded();
+        return $data['booker']['nombre'] ?? '';
     }
 }

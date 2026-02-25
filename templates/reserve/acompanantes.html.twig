@@ -1,0 +1,168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Reservar — Acompañantes · DonkeyTour{% endblock %}
+
+{% block client_body %}
+<div class="max-w-3xl mx-auto px-6 py-16">
+
+    {{ include('reserve/_wizard_progress.html.twig') }}
+
+    {% for type, messages in app.flashes %}
+        {% for msg in messages %}
+            <div class="mb-6 px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
+                {{ msg }}
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <div class="text-center mb-12">
+        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">Paso 4 de 5</span>
+        <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-2">¿Quién te acompaña?</h1>
+        <p class="text-stone-400 mt-2 max-w-lg mx-auto">
+            Puedes añadir hasta <strong class="text-[#8B5E3C]">{{ max_companions }}</strong> acompañante{{ max_companions != 1 ? 's' : '' }}.
+            Si vienes solo, simplemente continúa al siguiente paso.
+        </p>
+    </div>
+
+    <form method="post" action="{{ path('app_reserve_step4_post') }}" id="companionsForm">
+        <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)]">
+
+            {# Datos del reservante (solo informativo) #}
+            <div class="mb-8 p-5 bg-[#8B5E3C]/5 rounded-2xl border border-[#8B5E3C]/10">
+                <p class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] mb-2">Tú — Titular de la reserva</p>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-sm">
+                    <div>
+                        <span class="text-stone-400 text-xs block">Nombre</span>
+                        <span class="font-bold text-[#3E2F28]">{{ app.user.nombre }}</span>
+                    </div>
+                    <div>
+                        <span class="text-stone-400 text-xs block">NIF</span>
+                        <span class="font-bold text-[#3E2F28]">{{ app.user.nif }}</span>
+                    </div>
+                    <div>
+                        <span class="text-stone-400 text-xs block">Teléfono</span>
+                        <span class="font-bold text-[#3E2F28]">{{ app.user.telefono }}</span>
+                    </div>
+                </div>
+            </div>
+
+            {# Contenedor de acompañantes #}
+            <div id="companionsContainer" class="space-y-6">
+                {# Los acompañantes se añaden por JS #}
+            </div>
+
+            {# Botón añadir acompañante #}
+            {% if max_companions > 0 %}
+                <button type="button"
+                        id="addCompanion"
+                        class="mt-6 w-full py-4 border-2 border-dashed border-stone-200 rounded-2xl text-stone-400 font-bold
+                               hover:border-[#8B5E3C] hover:text-[#8B5E3C] hover:bg-[#8B5E3C]/5
+                               transition-all duration-300 flex items-center justify-center gap-2 text-sm">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/></svg>
+                    Añadir acompañante
+                </button>
+            {% endif %}
+
+            {# Navegación #}
+            <div class="mt-10 flex flex-col sm:flex-row items-center justify-between gap-4 pt-8 border-t border-stone-100">
+                <a href="{{ path('app_reserve_step3') }}"
+                   class="text-stone-500 font-bold hover:text-[#3E2F28] transition-colors text-sm flex items-center gap-1">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+                    Volver a selección de burro
+                </a>
+
+                <button type="submit"
+                        class="px-10 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300
+                               shadow-[0_10px_20px_rgba(139,94,60,0.3)] transform hover:-translate-y-0.5 flex items-center gap-2">
+                    Continuar
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </form>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const container  = document.getElementById('companionsContainer');
+    const addBtn     = document.getElementById('addCompanion');
+    const maxComp    = {{ max_companions }};
+    let   count      = 0;
+
+    function updateAddButton() {
+        if (addBtn) {
+            addBtn.style.display = count >= maxComp ? 'none' : 'flex';
+        }
+    }
+
+    function createCompanionCard(index) {
+        const card = document.createElement('div');
+        card.className = 'companion-card bg-stone-50 rounded-2xl p-6 border border-stone-100 relative animate-fade-in-down';
+        card.dataset.index = index;
+
+        card.innerHTML = `
+            <div class="flex items-center justify-between mb-4">
+                <p class="text-xs font-bold uppercase tracking-widest text-stone-400">Acompañante ${index + 1}</p>
+                <button type="button" class="remove-companion text-stone-300 hover:text-red-500 transition-colors p-1" title="Eliminar">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                    <label class="block text-[#8B5E3C] text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">Nombre</label>
+                    <input type="text" name="companions[${index}][nombre]" required
+                           placeholder="Nombre completo"
+                           class="w-full bg-white border-2 border-stone-100 text-[#3E2F28] font-medium rounded-xl px-4 py-3
+                                  focus:outline-none focus:border-[#4A90A4] transition-all placeholder:text-stone-300 text-sm">
+                </div>
+                <div>
+                    <label class="block text-[#8B5E3C] text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">NIF / DNI</label>
+                    <input type="text" name="companions[${index}][nif]"
+                           placeholder="12345678A"
+                           class="w-full bg-white border-2 border-stone-100 text-[#3E2F28] font-medium rounded-xl px-4 py-3
+                                  focus:outline-none focus:border-[#4A90A4] transition-all placeholder:text-stone-300 text-sm">
+                </div>
+                <div>
+                    <label class="block text-[#8B5E3C] text-[10px] font-bold uppercase tracking-widest mb-1.5 ml-1">Teléfono</label>
+                    <input type="tel" name="companions[${index}][telefono]"
+                           placeholder="600 123 456"
+                           class="w-full bg-white border-2 border-stone-100 text-[#3E2F28] font-medium rounded-xl px-4 py-3
+                                  focus:outline-none focus:border-[#4A90A4] transition-all placeholder:text-stone-300 text-sm">
+                </div>
+            </div>
+        `;
+
+        card.querySelector('.remove-companion').addEventListener('click', function () {
+            card.remove();
+            count--;
+            reindexCards();
+            updateAddButton();
+        });
+
+        return card;
+    }
+
+    function reindexCards() {
+        container.querySelectorAll('.companion-card').forEach(function (card, i) {
+            card.dataset.index = i;
+            card.querySelector('p').textContent = 'Acompañante ' + (i + 1);
+            card.querySelectorAll('input').forEach(function (input) {
+                input.name = input.name.replace(/companions\[\d+\]/, 'companions[' + i + ']');
+            });
+        });
+    }
+
+    if (addBtn) {
+        addBtn.addEventListener('click', function () {
+            if (count < maxComp) {
+                container.appendChild(createCompanionCard(count));
+                count++;
+                updateAddButton();
+            }
+        });
+    }
+
+    updateAddButton();
+});
+</script>
+{% endblock %}
