@@ -1,9 +1,43 @@
-<form method="post" action="{{ path('app_donkey_delete', {'id': donkey.id}) }}" onsubmit="return confirm('¿Estás seguro de eliminar a este protagonista?');" class="h-full">
+{# 
+   RECUERDA: Pon el archivo en public/sounds/rebuzno.ogg 
+#}
+
+<form id="delete-donkey-form-{{ donkey.id }}" method="post" action="{{ path('app_donkey_delete', {'id': donkey.id}) }}" class="h-full">
     <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ donkey.id) }}">
     
-    <button class="w-full h-full flex items-center justify-center bg-white border-2 border-stone-100 text-stone-300 hover:border-red-100 hover:text-red-400 hover:bg-red-50 rounded-2xl transition-all group" title="Eliminar del establo">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+    <button type="button" 
+            onclick="confirmarYRebuznar({{ donkey.id }})"
+            class="w-full h-full flex items-center justify-center bg-white border-2 border-stone-100 text-stone-300 hover:border-red-100 hover:text-red-400 hover:bg-red-50 rounded-2xl transition-all group" 
+            title="Eliminar del establo">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" 
+             class="h-5 w-5 group-hover:animate-bounce transition-all" 
+             fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
         </svg>
     </button>
 </form>
+
+<script>
+    // Usamos una variable global para el audio para evitar que se corte o duplique
+    if (typeof confirmarYRebuznar !== 'function') {
+        function confirmarYRebuznar(id) {
+            if (confirm('¿Estás seguro de que quieres eliminar a este protagonista?')) {
+                // Ruta exacta al archivo .ogg
+                const audioPath = "{{ asset('sounds/rebuzno.ogg') }}";
+                const audio = new Audio(audioPath);
+                
+                audio.play().then(() => {
+                    console.log("Rebuzno sonando...");
+                }).catch(error => {
+                    console.error("Error al reproducir el audio:", error);
+                });
+
+                // Los archivos .ogg suelen ser cortos, 1.5 o 2 segundos es ideal
+                setTimeout(() => {
+                    document.getElementById('delete-donkey-form-' + id).submit();
+                }, 1800);
+            }
+        }
+    }
+</script>
