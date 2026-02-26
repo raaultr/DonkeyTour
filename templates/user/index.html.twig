@@ -3,85 +3,98 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block body %}
-<div class="max-w-7xl mx-auto py-8 px-4">
-    {# Cabecera de la Lista #}
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-        <div>
-            <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight">{{ title }}</h1>
-            <p class="text-stone-500">Gestión de registros para la plataforma DonkeyTour.</p>
+<div class="bg-[#FCFAF7] h-full -m-8 flex flex-col overflow-hidden">
+    
+    {# Cabecera fija (Header) con padding para compensar el -m-8 #}
+    <div class="max-w-7xl mx-auto w-full px-8 pt-8 pb-4">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
+            <div>
+                <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-[10px]">Administración</span>
+                <h1 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-1">{{ title }}</h1>
+                <p class="text-stone-500 text-sm">Gestión de registros para la plataforma DonkeyTour.</p>
+            </div>
+            
+            <a href="{{ path('app_user_new', {'type': type|default('user')}) }}" 
+               class="inline-flex items-center justify-center gap-2 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold px-6 py-3 rounded-2xl shadow-lg transition-all hover:-translate-y-1 text-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                Añadir {{ type == 'employee' ? 'Empleado' : (type == 'client' ? 'Cliente' : 'Usuario') }}
+            </a>
         </div>
-        
-        <a href="{{ path('app_user_new', {'type': type|default('user')}) }}" 
-           class="inline-flex items-center justify-center gap-2 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold px-6 py-3 rounded-2xl shadow-lg transition-all hover:-translate-y-1">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
-            </svg>
-            Añadir {{ type == 'employee' ? 'Empleado' : (type == 'client' ? 'Cliente' : 'Usuario') }}
-        </a>
     </div>
 
-    {# Tabla con diseño moderno #}
-    <div class="bg-white rounded-[2rem] shadow-sm border border-stone-100 overflow-hidden">
-    <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse table-auto">
-            <thead>
-                <tr class="bg-stone-50 border-b border-stone-100">
-                    {# Usamos w-1/3 o similar para repartir el espacio y que no sobre al final #}
-                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider w-1/3">Nombre</th>
-                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider w-1/3">Email</th>
-                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider">NIF</th>
-                    {# La columna de acciones ahora solo ocupa lo que miden sus iconos #}
-                    <th class="p-5 text-sm font-bold text-stone-600 uppercase tracking-wider text-center w-px whitespace-nowrap">Acciones</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-stone-50">
-                {% for user in users %}
-                    <tr class="hover:bg-stone-50/50 transition-colors group">
-                        <td class="p-5">
-                            <span class="font-semibold text-stone-800">{{ user.nombre }}</span>
-                        </td>
-                        <td class="p-5 text-stone-600">{{ user.email }}</td>
-                        <td class="p-5 text-stone-600 font-mono text-sm">{{ user.nif }}</td>
-                        
-                        {# Acciones ajustadas sin margen extra #}
-                        <td class="p-5 px-8">
-                            <div class="flex items-center justify-center gap-1">
-                                {# Ver #}
-                                <a href="{{ path('app_user_show', {'id': user.id}) }}" 
-                                   class="p-2 text-stone-400 hover:text-[#4A90A4] hover:bg-[#4A90A4]/10 rounded-xl transition-all" 
-                                   title="Ver">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                                    </svg>
-                                </a>
+    {# Área de la Tabla con scroll interno propio #}
+    <div class="flex-1 overflow-y-auto px-8 pb-12 custom-scrollbar">
+        <div class="max-w-7xl mx-auto">
+            <div class="bg-white rounded-[2.5rem] border border-stone-100 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse table-auto">
+                        <thead class="bg-stone-50/50">
+                            <tr class="border-b border-stone-100">
+                                <th class="p-6 text-[10px] font-bold text-stone-400 uppercase tracking-widest w-1/3">Nombre</th>
+                                <th class="p-6 text-[10px] font-bold text-stone-400 uppercase tracking-widest w-1/3">Email</th>
+                                <th class="p-6 text-[10px] font-bold text-stone-400 uppercase tracking-widest">NIF</th>
+                                <th class="p-6 text-[10px] font-bold text-stone-400 uppercase tracking-widest text-center w-px whitespace-nowrap">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-stone-50">
+                            {% for user in users %}
+                                <tr class="hover:bg-stone-50/50 transition-colors group">
+                                    <td class="p-6">
+                                        <span class="font-bold text-[#3E2F28]">{{ user.nombre }}</span>
+                                    </td>
+                                    <td class="p-6 text-stone-600 text-sm">{{ user.email }}</td>
+                                    <td class="p-6 text-stone-400 font-mono text-xs">{{ user.nif }}</td>
+                                    
+                                    <td class="p-6">
+                                        <div class="flex items-center justify-center gap-1">
+                                            {# Ver #}
+                                            <a href="{{ path('app_user_show', {'id': user.id}) }}" 
+                                               class="p-2 text-stone-400 hover:text-[#4A90A4] hover:bg-[#4A90A4]/10 rounded-xl transition-all" 
+                                               title="Ver">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                </svg>
+                                            </a>
 
-                                {# Editar #}
-                                <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
-                                   class="p-2 text-stone-400 hover:text-[#8B5E3C] hover:bg-[#8B5E3C]/10 rounded-xl transition-all"
-                                   title="Editar">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                                    </svg>
-                                </a>
+                                            {# Editar #}
+                                            <a href="{{ path('app_user_edit', {'id': user.id}) }}" 
+                                               class="p-2 text-stone-400 hover:text-[#8B5E3C] hover:bg-[#8B5E3C]/10 rounded-xl transition-all"
+                                               title="Editar">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                                                </svg>
+                                            </a>
 
-                                {# Eliminar #}
-                                <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('¿Eliminar registro?');" class="inline">
-                                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
-                                    <button class="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                        </svg>
-                                    </button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+                                            {# Eliminar #}
+                                            <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" onsubmit="return confirm('¿Eliminar registro?');" class="inline">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                                <button class="p-2 text-stone-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                    </svg>
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="p-12 text-center text-stone-400 italic">No hay registros disponibles.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
-    </div>
-</div>
+{% endblock %}
+
+{# Renderizado único para el Admin para evitar errores de bloque body duplicado #}
+{% block admin_content %}
+    {{ block('body') }}
 {% endblock %}
