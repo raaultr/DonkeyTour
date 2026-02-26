@@ -222,4 +222,12 @@ class Service
 
         return $this;
     }
+
+    /**
+     * Comprueba si este servicio es de tipo Apadrinamiento (Sponsorship).
+     */
+    public function isSponsorship(): bool
+    {
+        return $this instanceof \App\Entity\Sponsorship;
+    }
 }

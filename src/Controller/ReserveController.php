@@ -7,6 +7,7 @@ use App\Entity\ClientReserve;
 use App\Entity\DonkeyReserve;
 use App\Entity\Donkey;
 use App\Entity\Service;
+use App\Entity\Sponsorship;
 use App\Repository\ReserveRepository;
 use App\Repository\ServiceRepository;
 use App\Repository\DonkeyRepository;
@@ -49,14 +50,16 @@ final class ReserveController extends AbstractController
         $request->getSession()->remove('reserve_wizard');
 
         return $this->render('reserve/seleccionar_servicio.html.twig', [
-            'services'     => $serviceRepository->findBy(['deletedAt' => null]),
-            'current_step' => 1,
+            'services'       => $serviceRepository->findBy(['deletedAt' => null]),
+            'current_step'   => 1,
+            'is_sponsorship' => false,
+            'total_steps'    => 5,
         ]);
     }
 
     #[Route('/new/select-service', name: 'app_reserve_step1_post', methods: ['POST'])]
     #[IsGranted('ROLE_USER')]
-    public function step1Post(Request $request): Response
+    public function step1Post(Request $request, EntityManagerInterface $em): Response
     {
         $serviceId = $request->request->getInt('service_id');
         if (!$serviceId) {
@@ -64,7 +67,22 @@ final class ReserveController extends AbstractController
             return $this->redirectToRoute('app_reserve_step1');
         }
 
-        $request->getSession()->set('reserve_wizard', ['service_id' => $serviceId]);
+        $service = $em->getRepository(Service::class)->find($serviceId);
+        if (!$service) {
+            $this->addFlash('error', 'Servicio no encontrado.');
+            return $this->redirectToRoute('app_reserve_step1');
+        }
+
+        $wizardData = [
+            'service_id'     => $serviceId,
+            'is_sponsorship' => $service instanceof Sponsorship,
+        ];
+        $request->getSession()->set('reserve_wizard', $wizardData);
+
+        // Apadrinamiento salta directamente a selección de burro (sin fecha ni acompañantes)
+        if ($service instanceof Sponsorship) {
+            return $this->redirectToRoute('app_reserve_step3');
+        }
 
         return $this->redirectToRoute('app_reserve_step2');
     }
@@ -88,8 +106,10 @@ final class ReserveController extends AbstractController
         }
 
         return $this->render('reserve/fecha_hora.html.twig', [
-            'service'      => $service,
-            'current_step' => 2,
+            'service'        => $service,
+            'current_step'   => 2,
+            'is_sponsorship' => false,
+            'total_steps'    => 5,
         ]);
     }
 
@@ -130,15 +150,28 @@ final class ReserveController extends AbstractController
     public function step3(Request $request, DonkeyRepository $donkeyRepository): Response
     {
         $wizard = $request->getSession()->get('reserve_wizard');
-        if (!$wizard || !isset($wizard['datetime'])) {
+        $isSponsorship = $wizard['is_sponsorship'] ?? false;
+
+        // Para servicios normales se requiere fecha; para apadrinamiento no
+        if (!$isSponsorship && (!$wizard || !isset($wizard['datetime']))) {
             return $this->redirectToRoute('app_reserve_step2');
         }
+        if (!$wizard || !isset($wizard['service_id'])) {
+            return $this->redirectToRoute('app_reserve_step1');
+        }
 
-        $date = new \DateTime($wizard['datetime']);
+        if ($isSponsorship) {
+            $donkeys = $donkeyRepository->findAllAvailable();
+        } else {
+            $date = new \DateTime($wizard['datetime']);
+            $donkeys = $donkeyRepository->findAvailableForDate($date);
+        }
 
         return $this->render('reserve/seleccionar_burro.html.twig', [
-            'donkeys'      => $donkeyRepository->findAvailableForDate($date),
-            'current_step' => 3,
+            'donkeys'        => $donkeys,
+            'current_step'   => $isSponsorship ? 2 : 3,
+            'is_sponsorship' => $isSponsorship,
+            'total_steps'    => $isSponsorship ? 3 : 5,
         ]);
     }
 
@@ -159,6 +192,11 @@ final class ReserveController extends AbstractController
 
         $wizard['donkey_id'] = $donkeyId;
         $request->getSession()->set('reserve_wizard', $wizard);
+
+        // Apadrinamiento: saltar acompañantes, ir directo a confirmación
+        if ($wizard['is_sponsorship'] ?? false) {
+            return $this->redirectToRoute('app_reserve_step5');
+        }
 
         return $this->redirectToRoute('app_reserve_step4');
     }
@@ -182,6 +220,8 @@ final class ReserveController extends AbstractController
             'service'        => $service,
             'max_companions' => max(0, ($service ? $service->getMaxAphor() : 1) - 1),
             'current_step'   => 4,
+            'is_sponsorship' => false,
+            'total_steps'    => 5,
         ]);
     }
 
@@ -228,16 +268,19 @@ final class ReserveController extends AbstractController
             return $this->redirectToRoute('app_reserve_step1');
         }
 
-        $service = $em->getRepository(Service::class)->find($wizard['service_id']);
-        $donkey  = $em->getRepository(Donkey::class)->find($wizard['donkey_id']);
+        $service       = $em->getRepository(Service::class)->find($wizard['service_id']);
+        $donkey        = $em->getRepository(Donkey::class)->find($wizard['donkey_id']);
+        $isSponsorship = $wizard['is_sponsorship'] ?? false;
 
         return $this->render('reserve/confirmacion.html.twig', [
-            'service'      => $service,
-            'donkey'       => $donkey,
-            'datetime'     => $wizard['datetime'],
-            'companions'   => $wizard['companions'] ?? [],
-            'user'         => $this->getUser(),
-            'current_step' => 5,
+            'service'        => $service,
+            'donkey'         => $donkey,
+            'datetime'       => $wizard['datetime'] ?? null,
+            'companions'     => $wizard['companions'] ?? [],
+            'user'           => $this->getUser(),
+            'current_step'   => $isSponsorship ? 3 : 5,
+            'is_sponsorship' => $isSponsorship,
+            'total_steps'    => $isSponsorship ? 3 : 5,
         ]);
     }
 
@@ -258,9 +301,10 @@ final class ReserveController extends AbstractController
             return $this->redirectToRoute('app_reserve_step5');
         }
 
-        $service = $em->getRepository(Service::class)->find($wizard['service_id']);
-        $donkey  = $em->getRepository(Donkey::class)->find($wizard['donkey_id']);
-        $user    = $this->getUser();
+        $service       = $em->getRepository(Service::class)->find($wizard['service_id']);
+        $donkey        = $em->getRepository(Donkey::class)->find($wizard['donkey_id']);
+        $user          = $this->getUser();
+        $isSponsorship = $wizard['is_sponsorship'] ?? false;
 
         if (!$service || !$donkey) {
             $this->addFlash('error', 'Datos inválidos. Empieza de nuevo.');
@@ -283,7 +327,6 @@ final class ReserveController extends AbstractController
 
         // --- Crear Reserve ---
         $reserve = new Reserve();
-        $reserve->setReserveDate(new \DateTime($wizard['datetime']));
         $reserve->setState(true);
         $reserve->setService($service);
         $reserve->setDonkeyReserve($donkeyReserve);
@@ -292,17 +335,33 @@ final class ReserveController extends AbstractController
         $reserve->setSelectedDonkey($donkey);
         $reserve->setCreatedAt(new \DateTimeImmutable());
 
-        // Guardar acompañantes + datos del reservante como JSON
-        $companions = $wizard['companions'] ?? [];
-        $reserve->setDetails(json_encode([
-            'companions' => $companions,
-            'booker'     => [
-                'nombre'   => $user->getNombre(),
-                'email'    => $user->getEmail(),
-                'nif'      => $user->getNif(),
-                'telefono' => $user->getTelefono(),
-            ],
-        ], JSON_UNESCAPED_UNICODE));
+        if ($isSponsorship) {
+            // Apadrinamiento: sin fecha ni acompañantes
+            $reserve->setReserveDate(null);
+            $reserve->setDetails(json_encode([
+                'companions' => [],
+                'booker'     => [
+                    'nombre'   => $user->getNombre(),
+                    'email'    => $user->getEmail(),
+                    'nif'      => $user->getNif(),
+                    'telefono' => $user->getTelefono(),
+                ],
+                'type' => 'sponsorship',
+            ], JSON_UNESCAPED_UNICODE));
+        } else {
+            // Servicio normal: con fecha y acompañantes
+            $reserve->setReserveDate(new \DateTime($wizard['datetime']));
+            $companions = $wizard['companions'] ?? [];
+            $reserve->setDetails(json_encode([
+                'companions' => $companions,
+                'booker'     => [
+                    'nombre'   => $user->getNombre(),
+                    'email'    => $user->getEmail(),
+                    'nif'      => $user->getNif(),
+                    'telefono' => $user->getTelefono(),
+                ],
+            ], JSON_UNESCAPED_UNICODE));
+        }
 
         $em->persist($reserve);
         $em->flush();

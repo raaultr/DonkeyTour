@@ -8,9 +8,14 @@
     {{ include('reserve/_wizard_progress.html.twig') }}
 
     <div class="text-center mb-12">
-        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">Paso 5 de 5</span>
-        <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-2">Confirma tu reserva</h1>
-        <p class="text-stone-400 mt-2">Revisa los datos y, si todo es correcto, confirma la reserva.</p>
+        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">Paso {{ current_step }} de {{ total_steps|default(5) }}</span>
+        {% if is_sponsorship is defined and is_sponsorship %}
+            <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-2">Confirma tu apadrinamiento</h1>
+            <p class="text-stone-400 mt-2">Revisa los datos y, si todo es correcto, confirma el apadrinamiento.</p>
+        {% else %}
+            <h1 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-2">Confirma tu reserva</h1>
+            <p class="text-stone-400 mt-2">Revisa los datos y, si todo es correcto, confirma la reserva.</p>
+        {% endif %}
     </div>
 
     <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)] space-y-8">
@@ -19,15 +24,22 @@
         <div>
             <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Servicio</h3>
             <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
-                <div class="w-12 h-12 rounded-xl bg-[#8B5E3C]/10 text-[#8B5E3C] flex items-center justify-center text-xl shrink-0">🎯</div>
+                <div class="w-12 h-12 rounded-xl bg-[#8B5E3C]/10 text-[#8B5E3C] flex items-center justify-center text-xl shrink-0">
+                    {% if is_sponsorship is defined and is_sponsorship %}💚{% else %}🎯{% endif %}
+                </div>
                 <div>
                     <p class="font-bold text-[#3E2F28] text-lg">{{ service.type|capitalize }}</p>
-                    <p class="text-xs text-stone-400">{{ service.basePrice }}€ / persona · {{ service.duration ? service.duration|date('H:i') : '—' }}h · Máx. {{ service.maxAphor }} personas</p>
+                    {% if is_sponsorship is defined and is_sponsorship %}
+                        <p class="text-xs text-stone-400">{{ service.basePrice }}€ / mes</p>
+                    {% else %}
+                        <p class="text-xs text-stone-400">{{ service.basePrice }}€ / persona · {{ service.duration ? service.duration|date('H:i') : '—' }}h · Máx. {{ service.maxAphor }} personas</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
 
-        {# ---- Fecha y hora ---- #}
+        {% if not (is_sponsorship is defined and is_sponsorship) %}
+        {# ---- Fecha y hora (solo servicios normales) ---- #}
         <div>
             <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Fecha y hora</h3>
             <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
@@ -40,10 +52,13 @@
                 </div>
             </div>
         </div>
+        {% endif %}
 
         {# ---- Burro ---- #}
         <div>
-            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Tu burro</h3>
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">
+                {% if is_sponsorship is defined and is_sponsorship %}Tu burro apadrinado{% else %}Tu burro{% endif %}
+            </h3>
             <div class="flex items-center gap-4 bg-stone-50 rounded-2xl p-5 border border-stone-100">
                 <div class="w-12 h-12 rounded-xl bg-[#764F32]/10 text-[#764F32] flex items-center justify-center text-xl shrink-0">🐴</div>
                 <div>
@@ -53,7 +68,8 @@
             </div>
         </div>
 
-        {# ---- Participantes ---- #}
+        {% if not (is_sponsorship is defined and is_sponsorship) %}
+        {# ---- Participantes (solo servicios normales) ---- #}
         <div>
             <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Participantes ({{ 1 + companions|length }})</h3>
 
@@ -76,17 +92,39 @@
                 </div>
             {% endfor %}
         </div>
+        {% else %}
+        {# ---- Padrino (solo apadrinamiento) ---- #}
+        <div>
+            <h3 class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-3">Padrino/Madrina</h3>
+            <div class="bg-[#8B5E3C]/5 rounded-2xl p-5 border border-[#8B5E3C]/10">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-[#3E2F28]">{{ user.nombre }}</p>
+                        <p class="text-xs text-stone-400">{{ user.nif }} · {{ user.telefono }} · {{ user.email }}</p>
+                    </div>
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-green-600 bg-green-50 px-3 py-1 rounded-full">Padrino</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
 
         {# ---- Precio total ---- #}
         <div class="bg-gradient-to-r from-[#8B5E3C] to-[#764F32] rounded-2xl p-6 text-white">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-white/70 text-xs font-bold uppercase tracking-widest">Total estimado</p>
-                    <p class="text-3xl font-bold mt-1">{{ service.basePrice * (1 + companions|length) }}€</p>
+                    <p class="text-white/70 text-xs font-bold uppercase tracking-widest">
+                        {% if is_sponsorship is defined and is_sponsorship %}Cuota de apadrinamiento{% else %}Total estimado{% endif %}
+                    </p>
+                    <p class="text-3xl font-bold mt-1">{{ service.basePrice }}{% if is_sponsorship is defined and is_sponsorship %}€/mes{% else %}{{ (service.basePrice * (1 + companions|length)) != service.basePrice ? '' }}€{% endif %}</p>
                 </div>
                 <div class="text-right text-white/70 text-xs">
-                    <p>{{ 1 + companions|length }} persona{{ (1 + companions|length) != 1 ? 's' : '' }} × {{ service.basePrice }}€</p>
-                    <p class="mt-1 text-white/50">💳 Pago no requerido aún</p>
+                    {% if is_sponsorship is defined and is_sponsorship %}
+                        <p>Apadrinamiento de {{ donkey.nombre }}</p>
+                        <p class="mt-1 text-white/50">💚 Gracias por tu generosidad</p>
+                    {% else %}
+                        <p>{{ 1 + companions|length }} persona{{ (1 + companions|length) != 1 ? 's' : '' }} × {{ service.basePrice }}€</p>
+                        <p class="mt-1 text-white/50">💳 Pago no requerido aún</p>
+                    {% endif %}
                 </div>
             </div>
         </div>
@@ -96,17 +134,17 @@
             <input type="hidden" name="_token" value="{{ csrf_token('reserve_finalize') }}">
 
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4">
-                <a href="{{ path('app_reserve_step4') }}"
+                <a href="{{ path('app_reserve_step3') }}"
                    class="text-stone-500 font-bold hover:text-[#3E2F28] transition-colors text-sm flex items-center gap-1">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-                    Volver a acompañantes
+                    {% if is_sponsorship is defined and is_sponsorship %}Volver a selección de burro{% else %}Volver a acompañantes{% endif %}
                 </a>
 
                 <button type="submit"
                         class="px-12 py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-2xl transition-all duration-300
                                shadow-[0_10px_20px_rgba(22,163,74,0.3)] transform hover:-translate-y-0.5 flex items-center gap-3 text-lg">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                    Confirmar Reserva
+                    {% if is_sponsorship is defined and is_sponsorship %}Confirmar Apadrinamiento{% else %}Confirmar Reserva{% endif %}
                 </button>
             </div>
         </form>

@@ -59,8 +59,8 @@
                                 {{ reserve.service.type }}
                             </span>
                         </td>
-                        <td class="py-4 px-4 font-medium">{{ reserve.reserveDate|date('d/m/Y') }}</td>
-                        <td class="py-4 px-4">{{ reserve.reserveDate|date('H:i') }}h</td>
+                        <td class="py-4 px-4 font-medium">{{ reserve.reserveDate ? reserve.reserveDate|date('d/m/Y') : (reserve.service.isSponsorship ? 'N/A' : '—') }}</td>
+                        <td class="py-4 px-4">{{ reserve.reserveDate ? reserve.reserveDate|date('H:i') ~ 'h' : (reserve.service.isSponsorship ? 'N/A' : '—') }}</td>
                         <td class="py-4 px-4">
                             {% if reserve.selectedDonkey %}
                                 <span class="flex items-center gap-1.5">

@@ -45,4 +45,20 @@ class DonkeyRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * Encuentra todos los burros disponibles (sin filtro de fecha).
+     * Usado para apadrinamiento.
+     *
+     * @return Donkey[]
+     */
+    public function findAllAvailable(): array
+    {
+        return $this->createQueryBuilder('d')
+            ->where('d.disponible = true')
+            ->andWhere('d.deletedAt IS NULL')
+            ->orderBy('d.nombre', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

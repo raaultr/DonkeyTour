@@ -1,6 +1,6 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}¡Reserva Confirmada! · DonkeyTour{% endblock %}
+{% block title %}{% if reserve.service.isSponsorship %}¡Apadrinamiento Confirmado!{% else %}¡Reserva Confirmada!{% endif %} · DonkeyTour{% endblock %}
 
 {% block client_body %}
 <div class="max-w-2xl mx-auto px-6 py-24 text-center">
@@ -12,27 +12,38 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
         </div>
-        <h1 class="text-4xl font-bold text-[#3E2F28] mb-3">¡Reserva confirmada!</h1>
-        <p class="text-stone-400 text-lg">Tu aventura con DonkeyTour está reservada. ¡Nos vemos pronto!</p>
+        {% if reserve.service.isSponsorship %}
+            <h1 class="text-4xl font-bold text-[#3E2F28] mb-3">¡Apadrinamiento confirmado!</h1>
+            <p class="text-stone-400 text-lg">Gracias por apadrinar a {{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : 'nuestro burro' }}. ¡Tu generosidad marca la diferencia!</p>
+        {% else %}
+            <h1 class="text-4xl font-bold text-[#3E2F28] mb-3">¡Reserva confirmada!</h1>
+            <p class="text-stone-400 text-lg">Tu aventura con DonkeyTour está reservada. ¡Nos vemos pronto!</p>
+        {% endif %}
     </div>
 
     {# Resumen breve #}
     <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-8 shadow-sm text-left mb-8">
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 text-sm">
             <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Nº de reserva</p>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">
+                    {% if reserve.service.isSponsorship %}Nº de apadrinamiento{% else %}Nº de reserva{% endif %}
+                </p>
                 <p class="font-bold text-[#3E2F28] text-lg">#{{ reserve.id }}</p>
             </div>
+            {% if not reserve.service.isSponsorship %}
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Fecha</p>
-                <p class="font-bold text-[#3E2F28] text-lg">{{ reserve.reserveDate|date('d/m/Y H:i') }}h</p>
+                <p class="font-bold text-[#3E2F28] text-lg">{{ reserve.reserveDate ? reserve.reserveDate|date('d/m/Y H:i') ~ 'h' : '—' }}</p>
             </div>
+            {% endif %}
             <div>
                 <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Servicio</p>
                 <p class="font-bold text-[#3E2F28]">{{ reserve.service.type|capitalize }}</p>
             </div>
             <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Burro asignado</p>
+                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">
+                    {% if reserve.service.isSponsorship %}Burro apadrinado{% else %}Burro asignado{% endif %}
+                </p>
                 <p class="font-bold text-[#3E2F28]">{{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : '—' }} 🐴</p>
             </div>
         </div>
