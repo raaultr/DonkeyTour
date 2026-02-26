@@ -63,7 +63,13 @@
                     <div class="w-10 h-10 rounded-xl bg-[#4A90A4]/10 text-[#4A90A4] flex items-center justify-center text-lg shrink-0">📅</div>
                     <div>
                         <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400">Fecha y hora</p>
-                        <p class="font-bold text-[#3E2F28]">{{ reserve.reserveDate|date('d/m/Y') }} a las {{ reserve.reserveDate|date('H:i') }}h</p>
+                        {% if reserve.service.isSponsorship %}
+                            <p class="font-bold text-[#3E2F28]">N/A — Apadrinamiento (sin fecha)</p>
+                        {% elseif reserve.reserveDate %}
+                            <p class="font-bold text-[#3E2F28]">{{ reserve.reserveDate|date('d/m/Y') }} a las {{ reserve.reserveDate|date('H:i') }}h</p>
+                        {% else %}
+                            <p class="font-bold text-stone-400">No especificada</p>
+                        {% endif %}
                     </div>
                 </div>
 
@@ -102,10 +108,22 @@
             <div class="bg-gradient-to-r from-[#3E2F28] to-[#5a443a] rounded-2xl p-5 text-white">
                 <div class="flex items-center justify-between">
                     <div>
-                        <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">Total estimado</p>
-                        <p class="text-2xl font-bold mt-0.5">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
+                        <p class="text-white/60 text-[10px] font-bold uppercase tracking-widest">
+                            {% if reserve.service.isSponsorship %}Cuota de apadrinamiento{% else %}Total estimado{% endif %}
+                        </p>
+                        {% if reserve.service.isSponsorship %}
+                            <p class="text-2xl font-bold mt-0.5">{{ reserve.service.basePrice }}€/mes</p>
+                        {% else %}
+                            <p class="text-2xl font-bold mt-0.5">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
+                        {% endif %}
                     </div>
-                    <p class="text-white/60 text-xs">{{ 1 + companionCount }} pers. × {{ reserve.service.basePrice }}€</p>
+                    <p class="text-white/60 text-xs">
+                        {% if reserve.service.isSponsorship %}
+                            Apadrinamiento de {{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : '—' }}
+                        {% else %}
+                            {{ 1 + companionCount }} pers. × {{ reserve.service.basePrice }}€
+                        {% endif %}
+                    </p>
                 </div>
             </div>
         </div>

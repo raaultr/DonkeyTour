@@ -51,12 +51,22 @@
                                                  {{ reserve.state ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-red-50 text-red-500 border border-red-100' }}">
                                         {{ reserve.state ? 'Activa' : 'Cancelada' }}
                                     </span>
+                                    {% if reserve.service.isSponsorship %}
+                                        <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-600 border border-green-100">
+                                            Apadrinamiento
+                                        </span>
+                                    {% endif %}
                                 </div>
                                 <div class="flex flex-wrap items-center gap-3 text-xs text-stone-400 font-medium">
-                                    <span class="flex items-center gap-1">📅 {{ reserve.reserveDate|date('d/m/Y') }}</span>
-                                    <span class="flex items-center gap-1">🕒 {{ reserve.reserveDate|date('H:i') }}h</span>
-                                    <span class="flex items-center gap-1">🐴 {{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : '—' }}</span>
-                                    <span class="flex items-center gap-1">👥 {{ 1 + companionCount }} persona{{ (1 + companionCount) != 1 ? 's' : '' }}</span>
+                                    {% if reserve.service.isSponsorship %}
+                                        <span class="flex items-center gap-1">💚 Apadrinamiento</span>
+                                        <span class="flex items-center gap-1">🐴 {{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : '—' }}</span>
+                                    {% else %}
+                                        <span class="flex items-center gap-1">📅 {{ reserve.reserveDate ? reserve.reserveDate|date('d/m/Y') : '—' }}</span>
+                                        <span class="flex items-center gap-1">🕒 {{ reserve.reserveDate ? reserve.reserveDate|date('H:i') ~ 'h' : '—' }}</span>
+                                        <span class="flex items-center gap-1">🐴 {{ reserve.selectedDonkey ? reserve.selectedDonkey.nombre : '—' }}</span>
+                                        <span class="flex items-center gap-1">👥 {{ 1 + companionCount }} persona{{ (1 + companionCount) != 1 ? 's' : '' }}</span>
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -64,8 +74,13 @@
                         {# Derecha: precio + flecha #}
                         <div class="flex items-center gap-4">
                             <div class="text-right">
-                                <p class="text-xl font-bold text-[#764F32]">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
-                                <p class="text-[10px] text-stone-400 font-bold uppercase">Total</p>
+                                {% if reserve.service.isSponsorship %}
+                                    <p class="text-xl font-bold text-[#764F32]">{{ reserve.service.basePrice }}€/mes</p>
+                                    <p class="text-[10px] text-stone-400 font-bold uppercase">Cuota</p>
+                                {% else %}
+                                    <p class="text-xl font-bold text-[#764F32]">{{ reserve.service.basePrice * (1 + companionCount) }}€</p>
+                                    <p class="text-[10px] text-stone-400 font-bold uppercase">Total</p>
+                                {% endif %}
                             </div>
                             <svg class="w-5 h-5 text-stone-300 group-hover:text-[#8B5E3C] group-hover:translate-x-1 transition-all" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
                         </div>

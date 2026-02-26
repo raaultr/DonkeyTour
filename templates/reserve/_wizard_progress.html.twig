@@ -1,5 +1,9 @@
 {# Barra de progreso del wizard de reserva — incluir con {{ include('reserve/_wizard_progress.html.twig') }} #}
-{% set steps = ['Servicio', 'Fecha y Hora', 'Burro', 'Acompañantes', 'Confirmación'] %}
+{% if is_sponsorship is defined and is_sponsorship %}
+    {% set steps = ['Servicio', 'Burro', 'Confirmación'] %}
+{% else %}
+    {% set steps = ['Servicio', 'Fecha y Hora', 'Burro', 'Acompañantes', 'Confirmación'] %}
+{% endif %}
 
 <div class="flex items-center justify-center gap-1 sm:gap-2 mb-12">
     {% for step in steps %}

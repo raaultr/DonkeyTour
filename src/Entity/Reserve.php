@@ -14,7 +14,7 @@ class Reserve
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?\DateTime $reserveDate = null;
 
     #[ORM\Column]
@@ -68,7 +68,7 @@ class Reserve
         return $this->reserveDate;
     }
 
-    public function setReserveDate(\DateTime $reserveDate): static
+    public function setReserveDate(?\DateTime $reserveDate): static
     {
         $this->reserveDate = $reserveDate;
 
