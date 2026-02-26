@@ -4,7 +4,7 @@
 {% block page_title %}Panel de Inicio{% endblock %}
 
 {# ======================================================= #}
-{# VISTA DEL ADMINISTRADOR (Las estadísticas que ya tenías) #}
+{# VISTA DEL ADMINISTRADOR                                  #}
 {# ======================================================= #}
 {% block body %}
     {% if is_granted('ROLE_ADMIN') %}
@@ -19,20 +19,17 @@
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                {# Tarjeta 1 #}
                 <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-4xl p-6 shadow-[0_10px_30px_rgba(139,94,60,0.05)]">
-                    <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Reservas Activas</h3>
-                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">12</p>
+                    <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Servicios Activos</h3>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">{{ services|length }}</p>
                 </div>
-                {# Tarjeta 2 #}
                 <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-4xl p-6 shadow-[0_10px_30px_rgba(139,94,60,0.05)]">
                     <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Burros Disponibles</h3>
-                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">8</p>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">{{ donkeys|length }}</p>
                 </div>
-                {# Tarjeta 3 #}
                 <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-4xl p-6 shadow-[0_10px_30px_rgba(139,94,60,0.05)]">
                     <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Rutas Disponibles</h3>
-                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">5</p>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">{{ services|filter(s => s.type == 'tour')|length }}</p>
                 </div>
             </div>
         </div>
@@ -40,107 +37,350 @@
 {% endblock %}
 
 {# ======================================================= #}
-{# VISTA DEL CLIENTE (Landing Page de DonkeyTour)          #}
+{# VISTA DEL CLIENTE (Landing Page)                         #}
 {# ======================================================= #}
 {% block client_body %}
     {% if not is_granted('ROLE_ADMIN') %}
-        <div class="animate-fade-in-down">
+        <div class="bg-[#FCFAF7]">
 
-            {# Hero Section (Cabecera) #}
-            <div class="relative h-[70vh] w-full flex items-center justify-center text-center text-white"
-                 style="background-image: url('{{ asset('img/burroBanner.png') }}'); background-size: cover; background-position: center 30%;">
-                <div class="absolute inset-0 bg-stone-900/50"></div>
-                <div class="relative z-10 px-4 max-w-3xl">
-                    <h1 class="text-4xl md:text-6xl font-serif font-extrabold tracking-tight mb-6 drop-shadow-lg">Descubre Granada de una forma diferente</h1>
-                    <p class="text-lg md:text-xl text-white/90 mb-8 font-medium drop-shadow-md">Vive una experiencia única explorando los rincones más bellos de la ciudad acompañado de nuestros nobles y amigables burros.</p>
-                    <a href="#servicios" class="inline-block px-8 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-amber-900/30 transform hover:-translate-y-1">
-                        Ver Rutas y Servicios
-                    </a>
+            {# ═══════════════════════════════════════════════
+               HERO
+            ═══════════════════════════════════════════════ #}
+            <div class="relative h-[75vh] w-full flex items-center justify-center text-center text-white overflow-hidden">
+                <div class="absolute inset-0 bg-black/40 z-10"></div>
+                <img src="{{ asset('img/burroBanner.png') }}" alt="DonkeyTour Granada"
+                     class="absolute inset-0 w-full h-full object-cover">
+
+                <div class="relative z-20 px-6 max-w-4xl">
+                    <span class="bg-white/20 backdrop-blur-md text-white px-5 py-1.5 text-xs font-bold uppercase tracking-widest rounded-full border border-white/25 inline-block mb-8">Granada, Andalucía</span>
+                    <h1 class="text-4xl md:text-6xl font-bold tracking-tight mb-6 drop-shadow-lg leading-tight">
+                        Descubre Granada<br>de una forma diferente
+                    </h1>
+                    <p class="text-lg md:text-xl text-white/90 mb-10 font-medium max-w-2xl mx-auto leading-relaxed drop-shadow-md">
+                        Vive una experiencia única explorando los rincones más bellos de la ciudad acompañado de nuestros nobles y amigables burros.
+                    </p>
+                    <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                        <a href="{{ path('app_service_index') }}"
+                           class="px-9 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300 shadow-lg shadow-amber-900/30 transform hover:-translate-y-0.5 flex items-center gap-2 text-lg">
+                            Ver Servicios
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                        </a>
+                        <a href="{{ path('app_about') }}"
+                           class="px-9 py-4 border-2 border-white/40 text-white font-bold rounded-2xl hover:bg-white/10 backdrop-blur-sm transition-all duration-300 text-lg">
+                            Sobre Nosotros
+                        </a>
+                    </div>
+                </div>
+
+                {# Scroll indicator #}
+                <div class="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 animate-bounce">
+                    <svg class="w-6 h-6 text-white/60" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
                 </div>
             </div>
 
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+            {# ═══════════════════════════════════════════════
+               POR QUÉ ELEGIRNOS — 3 ventajas
+            ═══════════════════════════════════════════════ #}
+            <div class="max-w-7xl mx-auto px-6 -mt-16 relative z-30 mb-24">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {% set highlights = [
+                        { icon: '🐾', color: 'emerald', title: 'Bienestar Animal', desc: 'Nuestros burros son familia. Reciben cuidados diarios y solo participan cuando están descansados.' },
+                        { icon: '🌿', color: 'amber', title: 'Turismo Sostenible', desc: 'Sin prisas, sin contaminación. Un ritmo lento que respeta el entorno natural de Granada.' },
+                        { icon: '🗺️', color: 'sky', title: 'Guías Locales', desc: 'Granadinos de corazón que conocen cada rincón, mirador y leyenda de esta tierra mágica.' }
+                    ] %}
 
-                {# Sobre Nosotros #}
-                <section id="sobre-nosotros" class="mb-24 scroll-mt-24">
-                    <div class="text-center mb-12">
-                        <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-sm">Nuestra Historia</span>
-                        <h2 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Sobre DonkeyTour</h2>
-                    </div>
-                    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-8 md:p-12 shadow-[0_20px_50px_rgba(139,94,60,0.05)] text-center max-w-4xl mx-auto">
-                        <p class="text-stone-600 text-lg leading-relaxed mb-6">
-                            Nacimos del amor por nuestra tierra andaluza y el respeto por un animal tan emblemático e histórico como es el burro. Nuestro objetivo es promover un turismo rural, lento y sostenible.
-                        </p>
-                        <p class="text-stone-600 text-lg leading-relaxed">
-                            Apostamos por el bienestar animal. Nuestros burros no son medios de transporte de carga pesada, son compañeros de viaje que marcan un ritmo pausado, permitiéndote disfrutar de las vistas, los sonidos y la magia de Granada.
-                        </p>
+                    {% for h in highlights %}
+                        <div class="bg-white/90 backdrop-blur-xl border border-stone-100 rounded-[2rem] p-8 shadow-[0_15px_40px_rgba(0,0,0,0.06)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] transition-all duration-300 group text-center">
+                            <div class="w-14 h-14 bg-{{ h.color }}-50 rounded-2xl flex items-center justify-center text-2xl mb-5 mx-auto group-hover:scale-110 transition-transform">
+                                {{ h.icon }}
+                            </div>
+                            <h3 class="text-lg font-bold text-[#3E2F28] mb-2">{{ h.title }}</h3>
+                            <p class="text-stone-500 text-sm leading-relaxed">{{ h.desc }}</p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-6">
+
+                {# ═══════════════════════════════════════════════
+                   SOBRE NOSOTROS — breve
+                ═══════════════════════════════════════════════ #}
+                <section class="mb-28">
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+                        <div>
+                            <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-xs">Nuestra Historia</span>
+                            <h2 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-3 mb-8 leading-tight">
+                                Nacidos del amor por<br>la tierra andaluza
+                            </h2>
+                            <div class="space-y-5 text-stone-600 text-lg leading-relaxed">
+                                <p>
+                                    <strong class="text-[#3E2F28]">DonkeyTour</strong> nació de un sueño sencillo: mostrar la belleza de Granada
+                                    a través de los ojos de quienes mejor la conocen — nuestros burros.
+                                </p>
+                                <p>
+                                    Apostamos por el bienestar animal y un turismo lento, rural y sostenible.
+                                    Nuestros burros no cargan, acompañan. Ellos marcan el ritmo pausado que te permite
+                                    disfrutar de las vistas, los sonidos y la magia de esta ciudad.
+                                </p>
+                            </div>
+                            <a href="{{ path('app_about') }}"
+                               class="inline-flex items-center gap-2 mt-8 px-7 py-3 border-2 border-stone-200 text-[#3E2F28] font-bold rounded-2xl hover:border-[#4A90A4] hover:text-[#4A90A4] hover:bg-[#4A90A4]/5 transition-all duration-300">
+                                Conoce nuestra historia
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
+                        </div>
+
+                        <div class="relative">
+                            <div class="bg-[#8B5E3C]/5 rounded-[3rem] p-4">
+                                <img src="{{ asset('img/burroBanner.png') }}"
+                                     alt="DonkeyTour Granada"
+                                     class="w-full h-96 object-cover rounded-[2.5rem] shadow-lg">
+                            </div>
+                            <div class="absolute -bottom-6 -left-6 bg-white rounded-3xl p-5 shadow-xl border border-stone-100 flex items-center gap-4">
+                                <div class="w-12 h-12 bg-[#4A90A4]/10 rounded-xl flex items-center justify-center text-xl">🐴</div>
+                                <div>
+                                    <p class="text-2xl font-bold text-[#3E2F28]">{{ donkeys|length }}</p>
+                                    <p class="text-[10px] text-stone-400 font-bold uppercase tracking-wider">Burros disponibles</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
 
-                {# Servicios #}
-                <section id="servicios" class="mb-24 scroll-mt-24">
-                    <div class="text-center mb-12">
-                        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-sm">¿Qué ofrecemos?</span>
-                        <h2 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Nuestros Servicios</h2>
+                {# ═══════════════════════════════════════════════
+                   SERVICIOS — datos reales
+                ═══════════════════════════════════════════════ #}
+                <section id="servicios" class="mb-28 scroll-mt-24">
+                    <div class="text-center mb-14">
+                        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">¿Qué ofrecemos?</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-3">Nuestros Servicios</h2>
+                        <p class="text-stone-400 mt-4 max-w-xl mx-auto">Desde rutas históricas hasta terapias asistidas — elige la experiencia que más conecte contigo.</p>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        {# Servicio 1 #}
-                        <div class="bg-white rounded-4xl p-8 border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                            <div class="w-14 h-14 bg-emerald-50 text-emerald-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🌿</div>
-                            <h3 class="text-xl font-bold text-[#3E2F28] mb-3">Ruta de la Naturaleza</h3>
-                            <p class="text-stone-500 mb-6">Un paseo relajante por los senderos de la vega y miradores escondidos. Ideal para desconectar del estrés.</p>
-                            <span class="text-[#4A90A4] font-bold">Desde 25€</span>
+                    {% if services|length > 0 %}
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                            {% set icons = {
+                                'tour': '🗺️',
+                                'therapy': '💆',
+                                'despedida': '🎉',
+                                'sponsorship': '💚',
+                                'service': '⭐'
+                            } %}
+                            {% set colors = {
+                                'tour': { bg: 'bg-amber-50', text: 'text-amber-600', badge: 'bg-amber-100 text-amber-800' },
+                                'therapy': { bg: 'bg-emerald-50', text: 'text-emerald-600', badge: 'bg-emerald-100 text-emerald-800' },
+                                'despedida': { bg: 'bg-purple-50', text: 'text-purple-600', badge: 'bg-purple-100 text-purple-800' },
+                                'sponsorship': { bg: 'bg-rose-50', text: 'text-rose-600', badge: 'bg-rose-100 text-rose-800' },
+                                'service': { bg: 'bg-sky-50', text: 'text-sky-600', badge: 'bg-sky-100 text-sky-800' }
+                            } %}
+                            {% set labels = {
+                                'tour': 'Tour',
+                                'therapy': 'Terapia',
+                                'despedida': 'Despedida',
+                                'sponsorship': 'Apadrinamiento',
+                                'service': 'Servicio'
+                            } %}
+
+                            {% for service in services %}
+                                {% set stype = service.type|default('service') %}
+                                {% set icon = icons[stype]|default('⭐') %}
+                                {% set color = colors[stype]|default(colors['service']) %}
+                                {% set label = labels[stype]|default('Servicio') %}
+
+                                <a href="{{ path('app_service_show', { id: service.id }) }}"
+                                   class="bg-white rounded-[2rem] p-8 border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 group block relative overflow-hidden">
+
+                                    {# Badge tipo #}
+                                    <span class="{{ color.badge }} text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider absolute top-6 right-6">
+                                        {{ label }}
+                                    </span>
+
+                                    <div class="w-14 h-14 {{ color.bg }} {{ color.text }} rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">
+                                        {{ icon }}
+                                    </div>
+
+                                    <h3 class="text-xl font-bold text-[#3E2F28] mb-3 pr-20">
+                                        {% if stype == 'tour' and service.name is defined %}
+                                            {{ service.name }}
+                                        {% else %}
+                                            {{ label }}
+                                        {% endif %}
+                                    </h3>
+
+                                    <p class="text-stone-500 text-sm leading-relaxed mb-6 line-clamp-3">
+                                        {{ service.description|length > 120 ? service.description|slice(0, 120) ~ '…' : service.description }}
+                                    </p>
+
+                                    <div class="flex items-center gap-6 text-xs text-stone-400 font-medium">
+                                        <span class="flex items-center gap-1.5">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                                            {{ service.duration|date('H:i') }}h
+                                        </span>
+                                        {% if not service.isSponsorship() %}
+                                            <span class="flex items-center gap-1.5">
+                                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4-4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+                                                Máx. {{ service.maxAphor }}
+                                            </span>
+                                        {% endif %}
+                                    </div>
+
+                                    <div class="mt-6 pt-5 border-t border-stone-100 flex items-center justify-between">
+                                        <span class="text-2xl font-bold text-[#3E2F28]">{{ service.basePrice|number_format(2, ',', '.') }}€</span>
+                                        <span class="text-[#4A90A4] text-sm font-bold group-hover:translate-x-1 transition-transform flex items-center gap-1">
+                                            Ver detalles
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                        </span>
+                                    </div>
+                                </a>
+                            {% endfor %}
                         </div>
-                        {# Servicio 2 #}
-                        <div class="bg-white rounded-4xl p-8 border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 group relative overflow-hidden">
-                            <div class="absolute top-0 right-0 bg-amber-100 text-amber-800 text-[10px] font-bold px-3 py-1 rounded-bl-xl uppercase tracking-wider">Más popular</div>
-                            <div class="w-14 h-14 bg-amber-50 text-amber-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">🏰</div>
-                            <h3 class="text-xl font-bold text-[#3E2F28] mb-3">Ruta Histórica</h3>
-                            <p class="text-stone-500 mb-6">Recorre el entorno histórico, divisando la majestuosidad de la Alhambra desde miradores únicos.</p>
-                            <span class="text-[#4A90A4] font-bold">Desde 35€</span>
+
+                        <div class="text-center mt-12">
+                            <a href="{{ path('app_service_index') }}"
+                               class="inline-flex items-center gap-2 text-[#8B5E3C] font-bold hover:text-[#764f32] transition-colors text-lg">
+                                Ver todos los servicios
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                            </a>
                         </div>
-                        {# Servicio 3 #}
-                        <div class="bg-white rounded-4xl p-8 border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 group">
-                            <div class="w-14 h-14 bg-purple-50 text-purple-600 rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform">👨‍👩‍👧‍👦</div>
-                            <h3 class="text-xl font-bold text-[#3E2F28] mb-3">Paseo Familiar</h3>
-                            <p class="text-stone-500 mb-6">Rutas cortas y seguras pensadas para que los más pequeños interactúen y disfruten de los animales.</p>
-                            <span class="text-[#4A90A4] font-bold">Desde 20€</span>
+                    {% else %}
+                        <div class="text-center py-16">
+                            <div class="text-5xl mb-4">🐴</div>
+                            <p class="text-stone-400 text-lg">Próximamente tendremos nuevos servicios disponibles.</p>
                         </div>
+                    {% endif %}
+                </section>
+
+                {# ═══════════════════════════════════════════════
+                   NUESTROS BURROS — datos reales
+                ═══════════════════════════════════════════════ #}
+                <section class="mb-28">
+                    <div class="text-center mb-14">
+                        <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-xs">Los protagonistas</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-3">Conoce a nuestros burros</h2>
+                        <p class="text-stone-400 mt-4 max-w-xl mx-auto">Cada uno tiene su propia personalidad. Elige a tu compañero de aventura favorito.</p>
+                    </div>
+
+                    {% if donkeys|length > 0 %}
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            {% for donkey in donkeys|slice(0, 8) %}
+                                <a href="{{ path('app_donkey_show', { id: donkey.id }) }}"
+                                   class="bg-white rounded-[2rem] overflow-hidden border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 group block">
+
+                                    {# Imagen #}
+                                    {% if donkey.photoUrl %}
+                                        <div class="h-56 overflow-hidden">
+                                            <img src="{{ donkey.photoUrl }}"
+                                                 alt="{{ donkey.nombre }}"
+                                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                        </div>
+                                    {% else %}
+                                        <div class="h-56 bg-gradient-to-br from-stone-100 to-stone-50 flex items-center justify-center">
+                                            <span class="text-6xl opacity-60 group-hover:scale-110 transition-transform">🐴</span>
+                                        </div>
+                                    {% endif %}
+
+                                    {# Info #}
+                                    <div class="p-6">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h3 class="font-bold text-lg text-[#3E2F28] group-hover:text-[#4A90A4] transition-colors">{{ donkey.nombre }}</h3>
+                                            {% if donkey.disponible %}
+                                                <span class="w-2.5 h-2.5 bg-emerald-400 rounded-full ring-4 ring-emerald-50" title="Disponible"></span>
+                                            {% endif %}
+                                        </div>
+                                        <p class="text-xs text-stone-400 uppercase tracking-wider font-medium">{{ donkey.race }}</p>
+                                        {% if donkey.years %}
+                                            <p class="text-xs text-stone-300 mt-1">{{ donkey.years }} años</p>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                            {% endfor %}
+                        </div>
+
+                        {% if donkeys|length > 8 %}
+                            <div class="text-center mt-10">
+                                <a href="{{ path('app_donkey_index') }}"
+                                   class="inline-flex items-center gap-2 text-[#4A90A4] font-bold hover:text-[#3d7f92] transition-colors text-lg">
+                                    Conocer a todos
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-16">
+                            <div class="text-5xl mb-4">🐴</div>
+                            <p class="text-stone-400 text-lg">Nuestros burros están descansando. ¡Vuelve pronto!</p>
+                        </div>
+                    {% endif %}
+                </section>
+
+                {# ═══════════════════════════════════════════════
+                   CÓMO FUNCIONA — 4 pasos
+                ═══════════════════════════════════════════════ #}
+                <section class="mb-28">
+                    <div class="text-center mb-14">
+                        <span class="text-[#8B5E3C] font-bold tracking-widest uppercase text-xs">Muy fácil</span>
+                        <h2 class="text-3xl md:text-4xl font-bold text-[#3E2F28] mt-3">¿Cómo funciona?</h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                        {% set steps = [
+                            { num: '01', icon: '🔍', title: 'Elige tu experiencia', desc: 'Explora nuestros servicios y elige el que más te guste.' },
+                            { num: '02', icon: '📅', title: 'Reserva tu fecha', desc: 'Selecciona el día y la hora que mejor te venga.' },
+                            { num: '03', icon: '🐴', title: 'Conoce a tu burro', desc: 'Elige a tu compañero para la aventura.' },
+                            { num: '04', icon: '🌄', title: '¡Disfruta!', desc: 'Vive una experiencia única en Granada.' }
+                        ] %}
+
+                        {% for step in steps %}
+                            <div class="text-center group">
+                                <div class="relative">
+                                    <div class="w-20 h-20 bg-white border-2 border-stone-100 rounded-full flex items-center justify-center text-3xl mx-auto mb-6 shadow-sm group-hover:shadow-lg group-hover:border-[#8B5E3C]/30 transition-all duration-300">
+                                        {{ step.icon }}
+                                    </div>
+                                    <span class="absolute -top-2 -right-2 w-8 h-8 bg-[#8B5E3C] text-white text-xs font-bold rounded-full flex items-center justify-center shadow-md left-1/2 translate-x-4">
+                                        {{ step.num }}
+                                    </span>
+                                </div>
+                                <h4 class="text-lg font-bold text-[#3E2F28] mb-2">{{ step.title }}</h4>
+                                <p class="text-stone-500 text-sm leading-relaxed">{{ step.desc }}</p>
+                            </div>
+                        {% endfor %}
                     </div>
                 </section>
 
-                {# Nuestros Burros #}
-                <section id="burros" class="mb-12 scroll-mt-24">
-                    <div class="text-center mb-12">
-                        <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-sm">Los protagonistas</span>
-                        <h2 class="text-3xl md:text-4xl font-serif font-extrabold text-[#3E2F28] mt-2">Conoce a nuestros burros</h2>
-                    </div>
+                {# ═══════════════════════════════════════════════
+                   CTA FINAL
+                ═══════════════════════════════════════════════ #}
+                <section class="mb-16">
+                    <div class="bg-gradient-to-r from-[#3E2F28] to-[#5a443a] rounded-[2.5rem] p-12 md:p-16 text-white overflow-hidden relative">
+                        <div class="absolute -top-20 -right-20 w-64 h-64 bg-[#8B5E3C] rounded-full blur-3xl opacity-20"></div>
+                        <div class="absolute -bottom-20 -left-20 w-64 h-64 bg-[#4A90A4] rounded-full blur-3xl opacity-15"></div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
-                        {# Burro ficticio 1 #}
-                        <div class="bg-white rounded-3xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
-                            <div class="h-48 bg-stone-200 flex items-center justify-center text-4xl">🐴</div>
-                            <div class="p-5 text-center">
-                                <h3 class="font-bold text-lg text-[#3E2F28]">Platero</h3>
-                                <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">Tranquilo y goloso</p>
+                        <div class="relative z-10 text-center">
+                            <h2 class="text-3xl md:text-4xl font-bold mb-4">¿Listo para la aventura?</h2>
+                            <p class="text-white/70 text-lg mb-10 max-w-2xl mx-auto leading-relaxed">
+                                Déjate guiar por el ritmo pausado de nuestros burros y descubre una Granada que no encontrarás en ninguna guía.
+                            </p>
+                            <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
+                                {% if app.user %}
+                                    <a href="{{ path('app_reserve_step1') }}"
+                                       class="px-10 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300 shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2 text-lg">
+                                        Reservar Ahora
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('app_login') }}"
+                                       class="px-10 py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold rounded-2xl transition-all duration-300 shadow-lg transform hover:-translate-y-0.5 flex items-center gap-2 text-lg">
+                                        Inicia sesión para reservar
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+                                    </a>
+                                {% endif %}
+                                <a href="{{ path('app_donkey_index') }}"
+                                   class="px-10 py-4 border-2 border-white/20 text-white font-bold rounded-2xl hover:bg-white/10 transition-all duration-300 text-lg">
+                                    Conoce a los burros
+                                </a>
                             </div>
                         </div>
-                        {# Burro ficticio 2 #}
-                        <div class="bg-white rounded-3xl overflow-hidden border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
-                            <img src="{{ asset('img/burro1.jpg') }}" alt="Burro Margarita" class="h-48 w-full object-cover">  
-                            <div class="p-5 text-center">
-                                <h3 class="font-bold text-lg text-[#3E2F28]">Margarita</h3>
-                                <p class="text-xs text-stone-400 mt-1 uppercase tracking-wider">La líder del grupo</p>
-                            </div>
-                        </div>
-                        {# Puedes añadir más aquí #}
-                    </div>
-
-                    <div class="text-center mt-10">
-                        <a href="#" class="inline-flex items-center gap-2 text-[#8B5E3C] font-bold hover:text-[#764f32] transition-colors">
-                            Ver el establo completo <span aria-hidden="true">&rarr;</span>
-                        </a>
                     </div>
                 </section>
 
