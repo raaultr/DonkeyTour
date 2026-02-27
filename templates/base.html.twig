@@ -15,6 +15,7 @@
 
     {% block javascripts %}
         {% block importmap %}{{ importmap('app') }}{% endblock %}
+        <script type="module" src="{{ vite_asset('assets/react/main.jsx') }}"></script>
     {% endblock %}
 </head>
 <body class="font-[Inter] bg-[#fcfaf7] text-stone-700 antialiased selection:bg-[#4A90A4] selection:text-white">
@@ -214,6 +215,9 @@
             {% endif %}
         </div>
     {% endif %}
+
+{# Punto de montaje React: Botón global "Volver arriba" #}
+<div id="react-back-to-top"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {

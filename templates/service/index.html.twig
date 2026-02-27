@@ -17,62 +17,30 @@
         </div>
     </div>
 
-    {# --- FILTROS (Estilo Minimalista) --- #}
+    {# --- COMPONENTE REACT: Filtro interactivo de servicios --- #}
     <div class="max-w-7xl mx-auto px-6 -mt-8 relative z-30">
-        <div class="bg-white rounded-xl shadow-lg p-4 flex flex-wrap items-center justify-center gap-4 border border-stone-100">
-            <button class="px-6 py-2 bg-[#764F32] text-white rounded-lg font-bold text-sm transition-all">Todos</button>
-            <button class="px-6 py-2 text-stone-500 hover:bg-stone-50 rounded-lg font-bold text-sm transition-all">Despedidas</button>
-            <button class="px-6 py-2 text-stone-500 hover:bg-stone-50 rounded-lg font-bold text-sm transition-all">Histórico</button>
-            <button class="px-6 py-2 text-stone-500 hover:bg-stone-50 rounded-lg font-bold text-sm transition-all">Terapias</button>
-        </div>
+        <div id="react-service-filter"></div>
     </div>
 
-    {# --- GRID DE SERVICIOS (Basado en tus cards de la Home) --- #}
-    <div class="max-w-7xl mx-auto px-6 py-20">
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
-            {% for service in services %}
-                <div class="bg-white rounded-3xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-stone-100 flex flex-col group">
-                    
-                    {# Imagen del Servicio #}
-                    <div class="relative h-64 overflow-hidden">
-                        <img src="{{ asset('img/burroBanner.png') }}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="{{ service.type }}">
-                        <div class="absolute top-4 left-4">
-                            <span class="bg-[#764F32]/90 backdrop-blur-sm text-white text-[10px] font-bold px-3 py-1 rounded-md uppercase tracking-tighter">
-                                {{ service.type }}
-                            </span>
-                        </div>
-                        <div class="absolute bottom-4 right-4 bg-white px-4 py-2 rounded-2xl shadow-md border border-stone-50">
-                            <span class="text-[#764F32] font-bold text-xl">{{ service.basePrice }}€</span>
-                            <span class="text-stone-400 text-[10px] font-medium block -mt-1 uppercase">/ pers.</span>
+    {# --- FALLBACK sin JS (SEO + accesibilidad) --- #}
+    <noscript>
+        <div class="max-w-7xl mx-auto px-6 py-20">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+                {% for service in services %}
+                    <div class="bg-white rounded-3xl overflow-hidden shadow-sm border border-stone-100 flex flex-col">
+                        <div class="p-8 flex-grow flex flex-col">
+                            <h3 class="text-2xl font-bold text-stone-800 mb-4">{{ service.type }}</h3>
+                            <p class="text-stone-500 text-sm leading-relaxed mb-8 flex-grow">
+                                {{ service.description|length > 130 ? service.description|slice(0, 130) ~ '...' : service.description }}
+                            </p>
+                            <a href="{{ path('app_service_show', {'id': service.id}) }}" class="block w-full text-center py-4 border-2 border-[#764F32] text-[#764F32] font-bold rounded-xl hover:bg-[#764F32] hover:text-white transition-all uppercase tracking-widest text-[11px]">
+                                Ver Detalles
+                            </a>
                         </div>
                     </div>
-
-                    {# Contenido (Mismo estilo que tus cards de la Home) #}
-                    <div class="p-8 flex-grow flex flex-col">
-                        <div class="flex items-center gap-4 mb-4 text-stone-400 text-[11px] font-bold uppercase tracking-widest">
-                            <span class="flex items-center gap-1">🕒 {{ service.duration ? service.duration|date('H:i') : '2' }} Horas</span>
-                            <span class="flex items-center gap-1">👥 Grupo máx. {{ service.maxAphor }}</span>
-                        </div>
-
-                        <h3 class="text-2xl font-bold text-stone-800 mb-4 group-hover:text-[#764F32] transition-colors tracking-tight">
-                            {{ service.type }}
-                        </h3>
-                        
-                        <p class="text-stone-500 text-sm leading-relaxed mb-8 flex-grow">
-                            {{ service.description|length > 130 ? service.description|slice(0, 130) ~ '...' : service.description }}
-                        </p>
-                        
-                        <a href="{{ path('app_service_show', {'id': service.id}) }}" class="block w-full text-center py-4 border-2 border-[#764F32] text-[#764F32] font-bold rounded-xl hover:bg-[#764F32] hover:text-white transition-all uppercase tracking-widest text-[11px]">
-                            Ver Detalles del Tour
-                        </a>
-                    </div>
-                </div>
-            {% else %}
-                <div class="col-span-full text-center py-20">
-                    <p class="text-stone-400 italic">No hay servicios disponibles en este momento.</p>
-                </div>
-            {% endfor %}
+                {% endfor %}
+            </div>
         </div>
-    </div>
-
+    </noscript>
+</div>
 {% endblock %}
