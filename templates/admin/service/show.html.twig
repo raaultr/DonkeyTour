@@ -1,189 +1,124 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Servicio #{{ service.id }} · DonkeyTour Admin{% endblock %}
-{% block page_title %}Detalle del Servicio{% endblock %}
+{% block title %}Detalle Servicio #{{ service.getId() }} · DonkeyTour Admin{% endblock %}
 
 {% block body %}
-<div class="space-y-8">
+<div class="max-w-6xl mx-auto space-y-8 animate-in fade-in duration-700">
 
-    {# Flashes #}
-    {% for type, messages in app.flashes %}
-        {% for msg in messages %}
-            <div class="px-5 py-3 rounded-2xl text-sm font-bold {{ type == 'error' ? 'bg-red-50 text-red-600 border border-red-100' : 'bg-green-50 text-green-600 border border-green-100' }}">
-                {{ msg }}
+    {# --- CABECERA MINIMALISTA --- #}
+    <div class="bg-white rounded-[2.5rem] p-8 md:p-10 shadow-sm border border-stone-100 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div class="flex items-center gap-6">
+            <div class="w-16 h-16 bg-[#FCFAF7] border border-[#8B5E3C]/10 rounded-2xl flex items-center justify-center text-3xl">
+                {{ service.type == 'Tour' ? '🗺️' : '✨' }}
             </div>
-        {% endfor %}
-    {% endfor %}
-
-    {# Cabecera #}
-    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-            <span class="text-[#4A90A4] font-bold tracking-widest uppercase text-xs">Servicio #{{ service.id }}</span>
-            <h1 class="text-2xl md:text-3xl font-bold text-[#3E2F28] mt-1">{{ service.type }}</h1>
-            <p class="text-stone-400 text-sm mt-1">Creado el {{ service.createdAt ? service.createdAt|date('d/m/Y H:i') : '—' }}</p>
+            <div>
+                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-[#4A90A4] mb-1">Administración de Catálogo</p>
+                <h1 class="text-3xl font-black text-[#3E2F28] tracking-tight">
+                    {{ service.type }} <span class="text-stone-200">/</span> <span class="text-[#8B5E3C]">#{{ service.getId() }}</span>
+                </h1>
+            </div>
         </div>
-        <div class="flex gap-3">
-            <a href="{{ path('app_admin_service_edit', {'id': service.id}) }}" class="bg-[#8B5E3C] hover:bg-[#764f32] text-white px-5 py-2.5 rounded-2xl font-bold text-sm transition-all shadow-md">
-                Editar
-            </a>
-            <a href="{{ path('app_admin_service_index') }}" class="px-5 py-2.5 bg-white border border-stone-200 text-stone-500 text-sm font-bold rounded-2xl hover:border-stone-400 hover:text-stone-800 transition-all shadow-sm">
-                ← Volver
-            </a>
-        </div>
-    </div>
-
-    {# Info General #}
-    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-8 shadow-sm">
-        <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-6">Información General</p>
         
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-            <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Tipo</p>
-                {% set typeColor = {
-                    'Tour Guiado': 'bg-blue-50 text-blue-600 border-blue-100',
-                    'Tour': 'bg-blue-50 text-blue-600 border-blue-100',
-                    'Despedida': 'bg-pink-50 text-pink-600 border-pink-100',
-                    'Burroterapia': 'bg-emerald-50 text-emerald-600 border-emerald-100',
-                    'Apadrinamiento': 'bg-amber-50 text-amber-600 border-amber-100',
-                } %}
-                <span class="inline-block px-3 py-1 rounded-lg text-xs font-bold uppercase border {{ typeColor[service.type] | default('bg-stone-50 text-stone-500 border-stone-100') }}">
-                    {{ service.type }}
-                </span>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Precio Base</p>
-                <p class="text-2xl font-bold text-[#764F32]">{{ service.basePrice }}€</p>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Duración</p>
-                <p class="text-lg font-bold text-[#3E2F28]">{{ service.duration ? service.duration|date('H:i') : '—' }}h</p>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Aforo Máximo</p>
-                <p class="text-lg font-bold text-[#3E2F28]">👥 {{ service.maxAphor }} personas</p>
-            </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-8">
-            <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Idioma</p>
-                {% set langMap = {'es': '🇪🇸 Español', 'en': '🇬🇧 Inglés', 'fr': '🇫🇷 Francés', 'de': '🇩🇪 Alemán'} %}
-                <p class="text-sm font-bold text-[#3E2F28]">{{ langMap[service.leenguage] | default(service.leenguage) }}</p>
-            </div>
-            <div>
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Burro Asignado</p>
-                {% if service.donkey %}
-                    <p class="text-sm font-bold text-[#3E2F28]">🐴 {{ service.donkey.nombre }}</p>
-                {% else %}
-                    <p class="text-sm text-stone-300">Sin asignar</p>
-                {% endif %}
-            </div>
-            <div class="md:col-span-2">
-                <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Última actualización</p>
-                <p class="text-sm text-stone-500">{{ service.updatedAt ? service.updatedAt|date('d/m/Y H:i') : '—' }}</p>
-            </div>
-        </div>
-
-        <div class="mt-8 pt-6 border-t border-stone-100">
-            <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Descripción</p>
-            <p class="text-stone-600 leading-relaxed">{{ service.description }}</p>
+        <div class="flex gap-3">
+            <a href="{{ path('app_admin_service_edit', {'id': service.getId()}) }}" class="bg-[#8B5E3C] hover:bg-[#3E2F28] text-white px-8 py-3.5 rounded-2xl font-bold text-sm transition-all shadow-lg shadow-amber-900/10">
+                Editar Registro
+            </a>
+            <a href="{{ path('app_admin_service_index') }}" class="px-8 py-3.5 bg-stone-50 text-stone-500 text-sm font-bold rounded-2xl hover:bg-stone-100 transition-all">
+                Volver
+            </a>
         </div>
     </div>
 
-    {# Campos Específicos #}
-    {% set svc = service %}
-    {% if svc is instanceof('App\\Entity\\Tour') or svc is instanceof('App\\Entity\\Despedida') or svc is instanceof('App\\Entity\\Therapy') or svc is instanceof('App\\Entity\\Sponsorship') %}
-        <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-8 shadow-sm">
-            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-6">Campos Específicos</p>
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        
+        {# --- COLUMNA PRINCIPAL (BLANCA) --- #}
+        <div class="lg:col-span-8 space-y-8">
+            <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-stone-100">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#4A90A4] mb-8 border-b border-stone-50 pb-4">Descripción General</h3>
+                <p class="text-xl text-stone-600 leading-relaxed font-medium italic mb-10">
+                    "{{ service.description }}"
+                </p>
 
-            {% if svc is instanceof('App\\Entity\\Tour') %}
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Nombre del Tour</p>
-                        <p class="text-lg font-bold text-[#3E2F28]">{{ svc.name }}</p>
+                {# Datos rápidos en grid #}
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Precio</p>
+                        <p class="text-2xl font-black text-[#8B5E3C]">{{ service.basePrice }}€</p>
                     </div>
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Paradas</p>
-                        <p class="text-lg font-bold text-[#3E2F28]">{{ svc.stops }}</p>
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Capacidad</p>
+                        <p class="text-2xl font-black text-[#3E2F28]">{{ service.maxAphor }} pax</p>
                     </div>
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Audio-guía</p>
-                        <span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider {{ svc.audioExplanation ? 'bg-green-50 text-green-600 border border-green-100' : 'bg-stone-50 text-stone-400 border border-stone-100' }}">
-                            {{ svc.audioExplanation ? 'Incluida' : 'No incluida' }}
-                        </span>
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Tiempo</p>
+                        <p class="text-2xl font-black text-[#3E2F28]">{{ service.duration ? service.duration|date('H:i') : '02:00' }}h</p>
+                    </div>
+                    <div class="space-y-1">
+                        <p class="text-[9px] font-bold text-stone-400 uppercase tracking-widest">Idioma</p>
+                        <p class="text-2xl font-black text-[#3E2F28]">{{ service.leenguage|upper }}</p>
                     </div>
                 </div>
-                <div class="mt-6">
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Itinerario</p>
-                    <p class="text-stone-600 leading-relaxed">{{ svc.itinerary }}</p>
-                </div>
-                {% if svc.details %}
-                    <div class="mt-6">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Detalles</p>
-                        <p class="text-stone-600 leading-relaxed">{{ svc.details }}</p>
-                    </div>
-                {% endif %}
+            </div>
 
-            {% elseif svc is instanceof('App\\Entity\\Despedida') %}
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Temática</p>
-                        <p class="text-lg font-bold text-[#3E2F28]">{{ svc.tematica }}</p>
+            {# Campos de la clase HIJA (Tour) #}
+            {% if service.type == 'Tour' or service.type == 'Tour Guiado' %}
+                <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-stone-100 border-t-4 border-t-[#4A90A4]">
+                    <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#4A90A4] mb-8">Detalles de la Ruta</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+                        <div>
+                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-1">Nombre Comercial</p>
+                            <p class="text-lg font-bold text-[#3E2F28]">{{ service.name|default('—') }}</p>
+                        </div>
+                        <div>
+                            <p class="text-[10px] font-bold text-stone-400 uppercase mb-1">Paradas</p>
+                            <p class="text-lg font-bold text-[#3E2F28]">{{ service.stops|default('0') }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Lugar</p>
-                        <p class="text-lg font-bold text-[#3E2F28]">{{ svc.place }}</p>
+                    <div class="bg-[#FCFAF7] p-8 rounded-3xl border border-stone-100">
+                        <p class="text-[10px] font-bold text-[#8B5E3C] uppercase mb-4 tracking-widest">Itinerario Programado</p>
+                        <p class="text-stone-600 leading-loose text-sm italic">{{ service.itinerary|default('No definido')|nl2br }}</p>
                     </div>
                 </div>
-                {% if svc.details %}
-                    <div class="mt-6">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Detalles</p>
-                        <p class="text-stone-600 leading-relaxed">{{ svc.details }}</p>
-                    </div>
-                {% endif %}
-
-            {% elseif svc is instanceof('App\\Entity\\Therapy') %}
-                <div>
-                    <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-1">Lugar de la sesión</p>
-                    <p class="text-lg font-bold text-[#3E2F28]">{{ svc.place }}</p>
-                </div>
-                {% if svc.details %}
-                    <div class="mt-6">
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Detalles</p>
-                        <p class="text-stone-600 leading-relaxed">{{ svc.details }}</p>
-                    </div>
-                {% endif %}
-
-            {% elseif svc is instanceof('App\\Entity\\Sponsorship') %}
-                {% if svc.details %}
-                    <div>
-                        <p class="text-[10px] font-bold uppercase tracking-widest text-stone-400 mb-2">Detalles del apadrinamiento</p>
-                        <p class="text-stone-600 leading-relaxed">{{ svc.details }}</p>
-                    </div>
-                {% endif %}
             {% endif %}
         </div>
-    {% endif %}
 
-    {# Reservas vinculadas #}
-    {% if service.reserves|length > 0 %}
-        <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-3xl p-8 shadow-sm">
-            <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-4">Reservas vinculadas ({{ service.reserves|length }})</p>
-            <div class="space-y-3">
-                {% for reserve in service.reserves %}
-                    <div class="flex items-center justify-between p-4 bg-stone-50 rounded-2xl">
-                        <div class="flex items-center gap-4">
-                            <span class="font-bold text-[#3E2F28]">#{{ reserve.id }}</span>
-                            <span class="text-sm text-stone-500">{{ reserve.reserveDate|date('d/m/Y H:i') }}</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold {{ reserve.state ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500' }}">
-                                {{ reserve.state ? 'Activa' : 'Cancelada' }}
-                            </span>
-                        </div>
-                        <a href="{{ path('app_admin_reserve_show', {'id': reserve.id}) }}" class="text-[#4A90A4] text-xs font-bold hover:underline">Ver →</a>
+        {# --- COLUMNA LATERAL (LOGÍSTICA) --- #}
+        <div class="lg:col-span-4 space-y-8">
+            <div class="bg-white rounded-[2.5rem] p-10 shadow-sm border border-stone-100">
+                <h3 class="text-[10px] font-black uppercase tracking-[0.2em] text-[#8B5E3C] mb-8 text-center">Asignación Logística</h3>
+                
+                <div class="text-center space-y-6">
+                    <div class="p-6 bg-[#FCFAF7] rounded-[2rem] border border-stone-100">
+                        <p class="text-[9px] font-black text-stone-400 uppercase tracking-widest mb-3">Burro de Servicio</p>
+                        {% if service.donkey %}
+                            <p class="text-3xl mb-1">🐴</p>
+                            <p class="text-xl font-black text-[#3E2F28]">{{ service.donkey.nombre }}</p>
+                        {% else %}
+                            <p class="text-stone-300 italic text-sm">Pendiente de asignar</p>
+                        {% endif %}
                     </div>
-                {% endfor %}
+
+                    <div class="pt-6 border-t border-stone-50">
+                        <p class="text-[9px] font-black text-stone-400 uppercase tracking-widest mb-4">Estado de Reservas</p>
+                        <div class="flex justify-around items-center">
+                            <div class="text-center">
+                                <p class="text-3xl font-black text-[#3E2F28]">{{ service.reserves|length }}</p>
+                                <p class="text-[9px] font-bold text-stone-400 uppercase">Total</p>
+                            </div>
+                            <div class="w-px h-10 bg-stone-100"></div>
+                            <div class="text-center">
+                                <span class="w-3 h-3 rounded-full bg-emerald-500 inline-block mb-1 shadow-[0_0_10px_rgba(16,185,129,0.4)]"></span>
+                                <p class="text-[9px] font-bold text-stone-400 uppercase">Activo</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center opacity-40">
+                <p class="text-[9px] font-bold text-stone-400 uppercase tracking-[0.3em]">DonkeyTour System v2.6</p>
             </div>
         </div>
-    {% endif %}
+    </div>
 </div>
 {% endblock %}

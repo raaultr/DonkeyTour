@@ -29,21 +29,26 @@
                 {# ── Campos comunes ── #}
                 <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-2">Información General</p>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Precio base (€)</label>
                         {{ form_widget(form.basePrice, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
+                            'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
                         }}) }}
                     </div>
+                    
+                    {# Duración corregida con Puro Tailwind para alinear selectores #}
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Duración</label>
-                        {{ form_widget(form.duration) }}
+                        <div class="h-12 flex gap-2 [&_select]:flex-1 [&_select]:h-full [&_select]:rounded-xl [&_select]:border [&_select]:border-stone-200 [&_select]:bg-stone-50/50 [&_select]:px-3 [&_select]:font-bold [&_select]:text-stone-800 [&_select]:outline-none focus-within:[&_select]:border-[#8B5E3C] focus-within:[&_select]:bg-white transition-all">
+                            {{ form_widget(form.duration) }}
+                        </div>
                     </div>
+
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Aforo máximo</label>
                         {{ form_widget(form.maxAphor, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
+                            'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
                         }}) }}
                     </div>
                 </div>
@@ -52,13 +57,13 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Idioma</label>
                         {{ form_widget(form.leenguage, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
+                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all'
                         }}) }}
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Burro asignado</label>
                         {{ form_widget(form.donkey, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
+                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all'
                         }}) }}
                     </div>
                 </div>
@@ -66,19 +71,18 @@
                 <div class="flex flex-col gap-2">
                     <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Descripción</label>
                     {{ form_widget(form.description, {'attr': {
-                        'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                        'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
                         'rows': 3
                     }}) }}
                 </div>
 
-                {# ── Campos específicos ── #}
-                {% set svc = service %}
+                {# ── Campos específicos corregidos (Sin instanceof) ── #}
                 <div class="border-t border-stone-100 pt-6 mt-2">
                     <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-4">
                         Campos específicos: {{ type_label }}
                     </p>
 
-                    {% if svc is instanceof('App\\Entity\\Tour') %}
+                    {% if service.type in ['Tour', 'Tour Guiado'] %}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="flex flex-col gap-2">
                                 <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nombre del tour</label>
@@ -102,7 +106,7 @@
                             {{ form_widget(form.audioExplanation, {'attr': {'class': 'w-5 h-5 accent-[#4A90A4]'}}) }}
                         </div>
 
-                    {% elseif svc is instanceof('App\\Entity\\Despedida') %}
+                    {% elseif service.type == 'Despedida' %}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="flex flex-col gap-2">
                                 <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Temática</label>
@@ -118,7 +122,7 @@
                             {{ form_widget(form.details, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all', 'rows': 2}}) }}
                         </div>
 
-                    {% elseif svc is instanceof('App\\Entity\\Therapy') %}
+                    {% elseif service.type == 'Therapy' %}
                         <div class="flex flex-col gap-2 mb-6">
                             <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Lugar de la sesión</label>
                             {{ form_widget(form.place, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all'}}) }}
@@ -128,7 +132,7 @@
                             {{ form_widget(form.details, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all', 'rows': 2}}) }}
                         </div>
 
-                    {% elseif svc is instanceof('App\\Entity\\Sponsorship') %}
+                    {% elseif service.type == 'Sponsorship' %}
                         <div class="flex flex-col gap-2">
                             <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Detalles del apadrinamiento</label>
                             {{ form_widget(form.details, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all', 'rows': 3}}) }}

@@ -4,17 +4,18 @@
 {% block page_title %}Crear {{ type_label }}{% endblock %}
 
 {% block body %}
-<div class="bg-[#FCFAF7] p-4">
+<div class="bg-[#FCFAF7] p-4 min-h-screen">
     <div class="w-full max-w-7xl mx-auto">
 
         {# Cabecera #}
         <div class="flex items-center justify-between mb-4 px-4">
             <div>
-                <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight font-serif">Nuevo {{ type_label }}</h1>
-                <p class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">Configuración del servicio</p>
+                <h1 class="text-3xl font-extrabold text-[#3E2F28] tracking-tight">Nuevo <span class="text-[#8B5E3C]">{{ type_label }}</span></h1>
+                <p class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">Configuración inicial del servicio</p>
             </div>
-            <a href="{{ path('app_admin_service_choose_type') }}" class="px-5 py-2 border border-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-stone-100 transition-all">
-                ← Cambiar tipo
+            <a href="{{ path('app_admin_service_choose_type') }}" class="group flex items-center gap-2 px-5 py-2 border border-stone-200 text-stone-500 text-[10px] font-bold uppercase tracking-widest rounded-xl hover:bg-white hover:border-[#8B5E3C] hover:text-[#8B5E3C] transition-all shadow-sm">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+                Cambiar tipo
             </a>
         </div>
 
@@ -24,26 +25,32 @@
             {{ form_start(form, {'attr': {'class': 'space-y-6'}}) }}
 
                 {# ── Campos comunes ── #}
-                <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-2">Información General</p>
+                <div class="flex items-center gap-3 mb-2">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4]">Información General</p>
+                    <div class="h-px bg-stone-100 flex-1"></div>
+                </div>
 
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Precio base (€)</label>
                         {{ form_widget(form.basePrice, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                            'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
                             'placeholder': 'Ej: 25.00'
                         }}) }}
                     </div>
+
+                    {# Duración corregida para alinear los selects de Symfony #}
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Duración</label>
-                        {{ form_widget(form.duration, {'attr': {
-                            'class': 'rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all'
-                        }}) }}
+                        <div class="h-12 flex gap-2 [&_select]:flex-1 [&_select]:h-full [&_select]:rounded-xl [&_select]:border [&_select]:border-stone-200 [&_select]:bg-stone-50/50 [&_select]:px-3 [&_select]:font-bold [&_select]:text-stone-800 [&_select]:outline-none focus-within:[&_select]:border-[#8B5E3C] focus-within:[&_select]:bg-white transition-all">
+                            {{ form_widget(form.duration) }}
+                        </div>
                     </div>
+
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Aforo máximo</label>
                         {{ form_widget(form.maxAphor, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                            'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
                             'placeholder': 'Ej: 12'
                         }}) }}
                     </div>
@@ -53,138 +60,91 @@
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Idioma</label>
                         {{ form_widget(form.leenguage, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
+                            'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all'
                         }}) }}
                     </div>
                     <div class="flex flex-col gap-2">
                         <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Burro asignado</label>
                         {{ form_widget(form.donkey, {'attr': {
-                            'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all'
+                            'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all'
                         }}) }}
                     </div>
                 </div>
 
                 <div class="flex flex-col gap-2">
-                    <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Descripción</label>
+                    <label class="text-[10px] font-bold uppercase tracking-widest text-[#8B5E3C] ml-1">Descripción corta</label>
                     {{ form_widget(form.description, {'attr': {
-                        'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] focus:ring-4 focus:ring-[#8B5E3C]/5 outline-none transition-all',
+                        'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-medium focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
                         'rows': 3,
-                        'placeholder': 'Describe el servicio…'
+                        'placeholder': 'Breve descripción para el catálogo…'
                     }}) }}
                 </div>
 
                 {# ── Campos específicos por tipo ── #}
-                <div class="border-t border-stone-100 pt-6 mt-2">
+                <div class="border-t border-stone-100 pt-6 mt-4">
                     <p class="text-[10px] font-bold uppercase tracking-[0.2em] text-[#4A90A4] mb-4">
-                        Campos específicos: {{ type_label }}
+                        Atributos específicos de {{ type_label }}
                     </p>
 
                     {% if type_key == 'tour' %}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="flex flex-col gap-2">
                                 <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Nombre del tour</label>
-                                {{ form_widget(form.name, {'attr': {
-                                    'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                    'placeholder': 'Ej: Ruta del Albaycín'
-                                }}) }}
+                                {{ form_widget(form.name, {'attr': {'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-bold focus:border-[#8B5E3C] outline-none', 'placeholder': 'Ej: Ruta del Albaycín'}}) }}
                             </div>
                             <div class="flex flex-col gap-2">
                                 <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Número de paradas</label>
-                                {{ form_widget(form.stops, {'attr': {
-                                    'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                    'placeholder': 'Ej: 5'
-                                }}) }}
+                                {{ form_widget(form.stops, {'attr': {'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-bold focus:border-[#8B5E3C] outline-none', 'placeholder': 'Ej: 5'}}) }}
                             </div>
                         </div>
                         <div class="flex flex-col gap-2 mb-6">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Itinerario</label>
-                            {{ form_widget(form.itinerary, {'attr': {
-                                'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                'rows': 3,
-                                'placeholder': 'Describe las paradas y el recorrido…'
-                            }}) }}
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Itinerario detallado</label>
+                            {{ form_widget(form.itinerary, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-medium focus:border-[#8B5E3C] outline-none', 'rows': 3, 'placeholder': 'Describa el recorrido…'}}) }}
                         </div>
                         <div class="flex flex-col gap-2 mb-6">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Detalles adicionales</label>
-                            {{ form_widget(form.details, {'attr': {
-                                'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                'rows': 2
-                            }}) }}
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Detalles de logística</label>
+                            {{ form_widget(form.details, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-medium focus:border-[#8B5E3C] outline-none', 'rows': 2}}) }}
                         </div>
-                        <div class="flex items-center justify-between px-5 py-3 bg-[#EBF4F6] rounded-xl border border-[#4A90A4]/10 group transition-colors">
-                            <span class="text-[9px] font-bold uppercase tracking-widest text-[#4A90A4]">¿Incluye audio-guía?</span>
-                            {{ form_widget(form.audioExplanation, {'attr': {
-                                'class': 'w-5 h-5 text-[#4A90A4] border-none rounded focus:ring-0 cursor-pointer accent-[#4A90A4]'
-                            }}) }}
+                        <div class="flex items-center justify-between px-6 py-4 bg-[#EBF4F6] rounded-2xl border border-[#4A90A4]/10 transition-all">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-[#4A90A4]">Habilitar audio-guía</span>
+                            {{ form_widget(form.audioExplanation, {'attr': {'class': 'w-6 h-6 text-[#4A90A4] rounded border-none focus:ring-0 cursor-pointer accent-[#4A90A4]'}}) }}
                         </div>
 
                     {% elseif type_key == 'despedida' %}
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="flex flex-col gap-2">
                                 <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Temática</label>
-                                {{ form_widget(form.tematica, {'attr': {
-                                    'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                    'placeholder': 'Ej: Western, Flamenca…'
-                                }}) }}
+                                {{ form_widget(form.tematica, {'attr': {'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-bold focus:border-[#8B5E3C] outline-none'}}) }}
                             </div>
                             <div class="flex flex-col gap-2">
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Lugar</label>
-                                {{ form_widget(form.place, {'attr': {
-                                    'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                    'placeholder': 'Ej: Sacromonte'
-                                }}) }}
+                                <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Lugar de celebración</label>
+                                {{ form_widget(form.place, {'attr': {'class': 'w-full h-12 px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-bold focus:border-[#8B5E3C] outline-none'}}) }}
                             </div>
                         </div>
+                    {% endif %}
+                    
+                    {# Renderizar el resto de campos (detalles) si existen en el form #}
+                    {% if form.details is defined and type_key != 'tour' %}
                         <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Detalles adicionales</label>
-                            {{ form_widget(form.details, {'attr': {
-                                'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                'rows': 2
-                            }}) }}
-                        </div>
-
-                    {% elseif type_key == 'therapy' %}
-                        <div class="grid grid-cols-1 gap-6 mb-6">
-                            <div class="flex flex-col gap-2">
-                                <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Lugar de la sesión</label>
-                                {{ form_widget(form.place, {'attr': {
-                                    'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                    'placeholder': 'Ej: Finca El Olivar'
-                                }}) }}
-                            </div>
-                        </div>
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Detalles adicionales</label>
-                            {{ form_widget(form.details, {'attr': {
-                                'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                'rows': 2
-                            }}) }}
-                        </div>
-
-                    {% elseif type_key == 'sponsorship' %}
-                        <div class="flex flex-col gap-2">
-                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Detalles del apadrinamiento</label>
-                            {{ form_widget(form.details, {'attr': {
-                                'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 text-stone-800 font-bold focus:bg-white focus:border-[#8B5E3C] outline-none transition-all',
-                                'rows': 3,
-                                'placeholder': 'Incluir información sobre visitas, fotos, certificado…'
-                            }}) }}
+                            <label class="text-[10px] font-bold uppercase tracking-widest text-stone-400 ml-1">Información adicional</label>
+                            {{ form_widget(form.details, {'attr': {'class': 'w-full px-4 py-3 rounded-xl border border-stone-200 bg-stone-50/50 font-medium focus:border-[#8B5E3C] outline-none', 'rows': 2}}) }}
                         </div>
                     {% endif %}
                 </div>
 
                 {# Botón Submit #}
-                <div class="pt-2 flex justify-center">
-                    <button class="w-full max-w-md py-4 bg-[#8B5E3C] hover:bg-[#764f32] text-white font-bold text-[11px] uppercase tracking-[0.3em] rounded-2xl transition-all duration-300 shadow-md shadow-amber-900/20 transform hover:-translate-y-0.5 active:scale-95">
-                        Crear Servicio
+                <div class="pt-6 flex flex-col items-center gap-4">
+                    <button class="w-full max-w-md py-4 bg-[#8B5E3C] hover:bg-[#3E2F28] text-white font-black text-[11px] uppercase tracking-[0.3em] rounded-2xl transition-all duration-300 shadow-xl shadow-amber-900/20 transform hover:-translate-y-1 active:scale-95">
+                        Registrar {{ type_label }}
                     </button>
+                    <p class="text-[9px] font-bold text-stone-300 uppercase tracking-widest">Verifica los datos antes de guardar</p>
                 </div>
 
             {{ form_end(form) }}
         </div>
 
-        <p class="text-center mt-4 text-stone-300 text-[9px] font-bold uppercase tracking-[0.2em]">
-            DonkeyTour CRM — Granada, España
+        <p class="text-center mt-8 text-stone-300 text-[9px] font-bold uppercase tracking-[0.2em]">
+            DonkeyTour CRM &copy; {{ "now"|date("Y") }}
         </p>
     </div>
 </div>
