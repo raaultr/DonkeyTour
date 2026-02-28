@@ -8,28 +8,120 @@
 {# ======================================================= #}
 {% block body %}
     {% if is_granted('ROLE_ADMIN') %}
-        <div class="animate-fade-in-down">
-            <div class="relative rounded-4xl p-8 md:p-12 text-white shadow-xl shadow-stone-900/30 overflow-hidden mb-8 group h-80" style="background-image: url('{{ asset('img/burroBanner.png') }}'); background-size: cover; background-position: center 30%;">
-                <div class="absolute inset-0 bg-stone-900/40 transition-opacity duration-500 group-hover:bg-stone-900/30"></div>
-                <div class="relative z-10 flex flex-col items-start gap-4">
-                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-widest border border-white/30">Vista General</span>
-                    <h1 class="text-3xl md:text-5xl font-serif font-extrabold tracking-tight leading-tight drop-shadow-sm">¡Bienvenido de nuevo, {{ app.user.nombre|default('Administrador') }}! 👋</h1>
-                    <p class="text-white font-medium text-lg max-w-xl drop-shadow-sm leading-relaxed">Gestiona las reservas y supervisa el estado de nuestros burros.</p>
+        <div class="animate-fade-in-down space-y-8">
+            
+            {# BANNER: Centrado verticalmente con items-center #}
+            <div class="relative rounded-[3rem] p-8 md:p-12 text-white shadow-2xl shadow-stone-900/20 overflow-hidden group h-72 flex items-center" 
+                 style="background-image: url('{{ asset('img/burroBanner.png') }}'); background-size: cover; background-position: center 30%;">
+                <div class="absolute inset-0 bg-gradient-to-r from-stone-900/90 via-stone-900/40 to-transparent"></div>
+                <div class="relative z-10 w-full">
+                    <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-[10px] font-bold uppercase tracking-[0.2em] border border-white/30 mb-4">Panel de Control</span>
+                    <h1 class="text-4xl md:text-5xl font-serif font-extrabold tracking-tight drop-shadow-lg">Hola, {{ app.user.nombre|default('Admin') }} 👋</h1>
+                    <p class="text-stone-200 font-medium text-lg mt-2 drop-shadow-md">
+                        Hoy hay <span class="text-white font-bold">{{ reserves|length }}</span> reservas registradas en el sistema.
+                    </p>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-4xl p-6 shadow-[0_10px_30px_rgba(139,94,60,0.05)]">
-                    <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Servicios Activos</h3>
-                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">{{ services|length }}</p>
+            {# GRID DE ESTADÍSTICAS #}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div class="bg-white rounded-[2.5rem] p-7 border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+                    <div class="w-10 h-10 bg-emerald-50 text-emerald-600 rounded-xl flex items-center justify-center text-xl mb-4">💶</div>
+                    <h3 class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">Ingresos Totales</h3>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28] mt-1">
+                        {% set total = 0 %}
+                        {% for r in reserves %}{% set total = total + r.service.basePrice %}{% endfor %}
+                        {{ total|number_format(2, ',', '.') }}€
+                    </p>
                 </div>
-                <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-4xl p-6 shadow-[0_10px_30px_rgba(139,94,60,0.05)]">
-                    <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Burros Disponibles</h3>
-                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">{{ donkeys|length }}</p>
+
+                <div class="bg-white rounded-[2.5rem] p-7 border border-stone-100 shadow-sm">
+                    <div class="w-10 h-10 bg-blue-50 text-blue-600 rounded-xl flex items-center justify-center text-xl mb-4">📅</div>
+                    <h3 class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">Reservas Activas</h3>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28] mt-1">{{ reserves|filter(r => r.state == true)|length }}</p>
                 </div>
-                <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-4xl p-6 shadow-[0_10px_30px_rgba(139,94,60,0.05)]">
-                    <h3 class="text-stone-400 text-xs font-bold uppercase tracking-widest mb-1">Rutas Disponibles</h3>
-                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28]">{{ services|filter(s => s.type == 'tour')|length }}</p>
+
+                <div class="bg-white rounded-[2.5rem] p-7 border border-stone-100 shadow-sm">
+                    <div class="w-10 h-10 bg-amber-50 text-amber-600 rounded-xl flex items-center justify-center text-xl mb-4">🐴</div>
+                    <h3 class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">Burros en Flota</h3>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28] mt-1">{{ donkeys|length }}</p>
+                </div>
+
+                <div class="bg-white rounded-[2.5rem] p-7 border border-stone-100 shadow-sm">
+                    <div class="w-10 h-10 bg-purple-50 text-purple-600 rounded-xl flex items-center justify-center text-xl mb-4">✨</div>
+                    <h3 class="text-stone-400 text-[10px] font-bold uppercase tracking-widest">Tours Activos</h3>
+                    <p class="text-3xl font-serif font-extrabold text-[#3E2F28] mt-1">{{ services|filter(s => s.type == 'tour')|length }}</p>
+                </div>
+            </div>
+
+            {# LISTADOS INFERIORES #}
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div class="lg:col-span-2 space-y-4">
+                    <div class="flex items-center justify-between px-4">
+                        <h2 class="text-xl font-bold text-[#3E2F28]">Últimas Reservas</h2>
+                        <a href="{{ path('app_admin_reserve_index') }}" class="text-[#4A90A4] text-xs font-bold uppercase tracking-widest hover:underline">Ver todas</a>
+                    </div>
+                    
+                    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] overflow-hidden shadow-sm">
+                        <table class="w-full text-left">
+                            <thead class="bg-stone-50/50 border-b border-stone-100">
+                                <tr>
+                                    <th class="px-6 py-4 text-[10px] font-bold uppercase text-stone-400">Cliente</th>
+                                    <th class="px-6 py-4 text-[10px] font-bold uppercase text-stone-400">Servicio</th>
+                                    <th class="px-6 py-4 text-[10px] font-bold uppercase text-stone-400">Fecha</th>
+                                    <th class="px-6 py-4 text-right"></th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-stone-50">
+                                {% for reserve in reserves|slice(0, 5) %}
+                                    <tr class="hover:bg-stone-50/30 transition-colors">
+                                        <td class="px-6 py-4 font-bold text-[#3E2F28] text-sm">
+                                            {{ reserve.bookerName|default(reserve.bookedBy.nombre|default('Anónimo')) }}
+                                        </td>
+                                        <td class="px-6 py-4 text-xs font-medium text-stone-500">
+                                            <span class="px-2 py-1 bg-stone-100 rounded-lg uppercase text-[9px]">{{ reserve.service.type }}</span>
+                                        </td>
+                                        <td class="px-6 py-4 text-xs text-stone-400">
+                                            {{ reserve.reserveDate ? reserve.reserveDate|date('d/m/Y H:i') : 'N/A' }}
+                                        </td>
+                                        <td class="px-6 py-4 text-right">
+                                            <a href="{{ path('app_admin_reserve_show', {'id': reserve.id}) }}" class="text-[#4A90A4] hover:text-cyan-700 transition-colors inline-block" title="Ver detalle">
+                                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+                                                </svg>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr><td colspan="4" class="p-8 text-center text-stone-300 italic">No hay reservas recientes registradas</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <h2 class="text-xl font-bold text-[#3E2F28] px-4">Estado de Burros</h2>
+                    <div class="bg-white/80 backdrop-blur-xl border border-stone-100 rounded-[2.5rem] p-6 shadow-sm space-y-6">
+                        {% for donkey in donkeys|slice(0, 4) %}
+                            <div class="flex items-center justify-between group">
+                                <div class="flex items-center gap-3">
+                                    <div class="w-10 h-10 rounded-full bg-stone-100 overflow-hidden border-2 border-white shadow-sm flex items-center justify-center text-lg">🫏</div>
+                                    <div>
+                                        <p class="text-sm font-bold text-[#3E2F28]">{{ donkey.nombre }}</p>
+                                        <p class="text-[9px] text-stone-400 uppercase font-bold">{{ donkey.race }}</p>
+                                    </div>
+                                </div>
+                                <div class="flex flex-col items-end">
+                                    <span class="w-2 h-2 rounded-full {{ donkey.disponible ? 'bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.5)]' : 'bg-red-400' }}"></span>
+                                    <span class="text-[8px] text-stone-300 font-bold uppercase mt-1">{{ donkey.disponible ? 'Disponible' : 'Ocupado' }}</span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <hr class="border-stone-50">
+                        <a href="{{ path('app_donkey_index') }}" class="block text-center py-2 bg-stone-50 rounded-xl text-[10px] font-bold uppercase tracking-widest text-stone-400 hover:bg-[#8B5E3C] hover:text-white transition-all">Administrar Establos</a>
+                    </div>
                 </div>
             </div>
         </div>
