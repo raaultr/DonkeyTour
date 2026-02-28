@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Certificados de Apadrinamiento{% endblock %}
+
+{% block client_body %}
+<div class="bg-[#F4F1EA] min-h-screen py-16 px-4">
+    <div class="max-w-7xl mx-auto"> {# Aumentamos el ancho máximo para que quepan 3 #}
+        
+        <header class="text-center mb-16">
+            <span class="text-[#8B5E3C] font-black uppercase text-xs tracking-[0.4em] mb-4 block">Santuario DonkeyTour</span>
+            <h1 class="text-5xl font-serif font-extrabold text-[#3E2F28] tracking-tight">Mis Certificados</h1>
+            <div class="h-px w-24 bg-[#8B5E3C] mx-auto mt-6 opacity-30"></div>
+        </header>
+
+        {# templates/sponsorship/index.html.twig #}
+
+        <div data-controller="sponsorship-list" 
+            data-sponsorship-list-user-name-value="{{ app.user ? app.user.nombre : 'Padrino del Santuario' }}">
+            
+            <div data-sponsorship-list-target="container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10 items-start">
+                {# El JS inyectará los diplomas aquí #}
+            </div>
+        </div>
+
+        <footer class="mt-24 text-center no-print">
+            <a href="{{ path('app_donkey_index') }}" class="text-[#3E2F28] font-serif italic text-lg hover:text-[#8B5E3C] transition-colors">
+                ← Volver al establo
+            </a>
+        </footer>
+    </div>
+</div>
+{% endblock %}

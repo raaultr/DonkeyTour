@@ -37,7 +37,7 @@
                     </button>
                 </div>
 
-                <nav class="flex-1 px-4 py-8 space-y-2 overflow-y-auto">
+                <nav class="print:hidden flex-1 px-4 py-8 space-y-2 overflow-y-auto">
                     <p class="px-4 text-[10px] font-bold uppercase tracking-[0.2em] text-stone-400 mb-4 mt-2">Principal</p>
                     
                     <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-2xl transition-all duration-300 group {{ route == 'app_home' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
@@ -78,7 +78,7 @@
             </aside>
 
             <div class="flex-1 flex flex-col min-w-0 z-10">
-                <header class="h-20 md:h-32 bg-white/40 backdrop-blur-md border-b border-stone-100 flex items-center justify-between px-4 md:px-8 z-20">
+                <header class="print:hidden h-20 md:h-32 bg-white/40 backdrop-blur-md border-b border-stone-100 flex items-center justify-between px-4 md:px-8 z-20">
                     <div class="flex items-center gap-3">
                         <button id="admin-hamburger" class="md:hidden p-2.5 rounded-xl text-stone-500 hover:text-[#8B5E3C] hover:bg-[#8B5E3C]/10 transition-all">
                             <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -111,12 +111,12 @@
         <div class="min-h-screen flex flex-col relative z-10">
             
             {% if route != 'app_login' and route != 'app_register' %}
-                <header class="h-20 md:h-28 bg-white/80 backdrop-blur-md border-b border-stone-100 sticky top-0 flex items-center justify-between px-4 md:px-8 z-50">
+                <header class=" print:hidden h-20 md:h-25 bg-white/80 backdrop-blur-md border-b border-stone-100 sticky top-0 flex items-center justify-between px-4 md:px-8 z-50">
                     <div class="flex items-center gap-3">
                         <img src="{{ asset('img/logoDonkey_sinFondo.png') }}" alt="DonkeyTour" class="size-20 md:size-28 object-contain">
                     </div>
 
-                    <nav class="hidden md:flex items-center gap-6">
+                    <nav class="print:hidden hidden md:flex items-center gap-6 ml-32">
                         <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-4 py-2 rounded-2xl transition-all duration-300 group {{ route == 'app_home' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
                             Inicio
                         </a>
@@ -137,9 +137,12 @@
                     <div class="flex items-center gap-4 md:gap-6">
                         {% if app.user %}
                             <div class="flex items-center gap-3">
-                                <div class="text-right hidden md:block">
+                                <div class="text-right hidden md:flex flex-col">
                                     <p class="text-sm font-bold text-[#3E2F28]">{{ app.user.nombre | default('Viajero') }}</p>
                                     <a href="{{ path('app_reserve_my') }}" class="text-xs text-[#4A90A4] font-medium hover:underline">Mis Reservas</a>
+                                    <a href="{{ path('app_sponsorship') }}" class="text-xs text-[#4A90A4] font-medium hover:underline">
+                                        Mis Apadrinamientos
+                                    </a>
                                 </div>
                                 <div class="w-10 h-10 rounded-full bg-[#8B5E3C]/10 text-[#8B5E3C] border border-[#8B5E3C]/20 flex items-center justify-center font-bold">
                                     {{ app.user.nombre|default('V')|first|upper }}
@@ -163,7 +166,7 @@
 
                 {# ── Menú móvil cliente ── #}
                 <div id="client-mobile-menu" class="md:hidden fixed inset-x-0 top-20 bottom-0 bg-white/95 backdrop-blur-xl z-40 translate-y-full transition-transform duration-300 ease-in-out overflow-y-auto">
-                    <nav class="flex flex-col px-6 py-8 gap-2">
+                    <nav class="print:hidden flex flex-col px-6 py-8 gap-2">
                         <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-4 py-4 rounded-2xl text-[#3E2F28] font-bold hover:bg-[#8B5E3C]/10 transition-all {{ route == 'app_home' ? 'bg-[#8B5E3C]/10 text-[#8B5E3C]' : '' }}">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
                             Inicio
