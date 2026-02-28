@@ -20,8 +20,6 @@
 </head>
 <body class="font-[Inter] bg-[#fcfaf7] text-stone-700 antialiased selection:bg-[#4A90A4] selection:text-white">
 
-    <div class="fixed -bottom-24 -right-24 w-96 h-96 bg-[#4A90A4] rounded-full blur-3xl opacity-10 pointer-events-none z-0"></div>
-
     {% set route = app.request.attributes.get('_route') %}
 
     {% if is_granted('ROLE_ADMIN') %}
@@ -32,7 +30,7 @@
 
             <aside id="admin-sidebar" class="w-72 flex flex-col bg-white/80 backdrop-blur-xl border-r border-stone-100 shadow-[20px_0_50px_rgba(139,94,60,0.03)] z-40
                 fixed md:relative inset-y-0 left-0 -translate-x-full md:translate-x-0 transition-transform duration-300 ease-in-out">
-                <div class="h-24 flex items-center justify-between px-6 border-b border-stone-100/50">
+                <div class="h-24 flex items-center justify-between px-22 border-b border-stone-100/50">
                     <img src="{{ asset('img/logoDonkey_sinFondo.png') }}" alt="DonkeyTour" class="size-28 object-contain">
                     <button id="admin-sidebar-close" class="md:hidden p-2 rounded-xl text-stone-400 hover:text-red-500 hover:bg-red-50 transition-all">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -118,11 +116,19 @@
                         <img src="{{ asset('img/logoDonkey_sinFondo.png') }}" alt="DonkeyTour" class="size-20 md:size-28 object-contain">
                     </div>
 
-                    <nav class="hidden md:flex items-center gap-8">
-                        <a href="{{ path('app_home') }}" class="text-[#8B5E3C] font-bold hover:text-[#764f32] transition-colors">Inicio</a>
-                        <a href="{{ path('app_about') }}" class="text-stone-500 font-medium hover:text-[#4A90A4] transition-colors">Sobre Nosotros</a>
-                        <a href="{{ path('app_service_index') }}" class="text-stone-500 font-medium hover:text-[#4A90A4] transition-colors">Servicios</a>
-                        <a href="{{ path('app_donkey_index') }}" class="text-stone-500 font-medium hover:text-[#4A90A4] transition-colors">Nuestros Burros</a>
+                    <nav class="hidden md:flex items-center gap-6">
+                        <a href="{{ path('app_home') }}" class="flex items-center gap-3 px-4 py-2 rounded-2xl transition-all duration-300 group {{ route == 'app_home' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
+                            Inicio
+                        </a>
+                        <a href="{{ path('app_about') }}" class="flex items-center gap-3 px-4 py-2 rounded-2xl transition-all duration-300 group {{ route == 'app_about' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
+                            Sobre Nosotros
+                        </a>
+                        <a href="{{ path('app_service_index') }}" class="flex items-center gap-3 px-4 py-2 rounded-2xl transition-all duration-300 group {{ route == 'app_service_index' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
+                            Servicios
+                        </a>
+                        <a href="{{ path('app_donkey_index') }}" class="flex items-center gap-3 px-4 py-2 rounded-2xl transition-all duration-300 group {{ route == 'app_donkey_index' ? 'text-[#8B5E3C] bg-[#8B5E3C]/10 font-bold' : 'text-stone-500 font-medium hover:bg-stone-100/80 hover:text-[#8B5E3C]' }}">
+                            Nuestros Burros
+                        </a>
                         {% if app.user %}
                             <a href="{{ path('app_reserve_step1') }}" class="text-white bg-[#8B5E3C] hover:bg-[#764f32] px-4 py-2 rounded-xl font-bold text-sm transition-all shadow-sm">Reservar</a>
                         {% endif %}
@@ -220,7 +226,7 @@
 <div id="react-back-to-top"></div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
+    document.addEventListener('turbo:load', function () {
         // ── Admin hamburger ──
         const adminHamburger = document.getElementById('admin-hamburger');
         const adminSidebar = document.getElementById('admin-sidebar');

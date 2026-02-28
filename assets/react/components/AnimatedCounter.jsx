@@ -1,45 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
 
+/**
+ * COMPONENTE: AnimatedCounter
+ * Crea un número que sube de 0 hasta un objetivo con animación suave.
+ */
 export default function AnimatedCounter({ target, label, icon, suffix = '' }) {
-    const [count, setCount] = useState(0);
-    const [hasAnimated, setHasAnimated] = useState(false);
-    const ref = useRef(null);
+    const [count, setCount] = useState(0); // Valor actual del contador
+    const [hasAnimated, setHasAnimated] = useState(false); // Evita repetir la animación
+    const ref = useRef(null); // Referencia al elemento para el Observer
 
     useEffect(() => {
+        // IntersectionObserver: Detecta cuando el contador aparece en pantalla
         const observer = new IntersectionObserver(
             ([entry]) => {
+                // Si el usuario llega al elemento y no ha animado antes, dispara la función
                 if (entry.isIntersecting && !hasAnimated) {
                     setHasAnimated(true);
-                    animateCount(0, target, 1500);
+                    animateCount(0, target, 1500); // 1.5 segundos de duración
                 }
             },
-            { threshold: 0.3 }
+            { threshold: 0.3 } // Se activa cuando el 30% del componente es visible
         );
 
         if (ref.current) observer.observe(ref.current);
-        return () => observer.disconnect();
+        return () => observer.disconnect(); // Limpieza al cambiar de página
     }, [target, hasAnimated]);
 
+    // Lógica matemática de la animación (Easing)
     const animateCount = (start, end, duration) => {
         const startTime = performance.now();
         const step = (currentTime) => {
             const elapsed = currentTime - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            // Easing: easeOutExpo
+            
+            // "EaseOutExpo": La animación empieza rápido y frena al final
             const eased = progress === 1 ? 1 : 1 - Math.pow(2, -10 * progress);
+            
             setCount(Math.floor(start + (end - start) * eased));
+            
             if (progress < 1) {
-                requestAnimationFrame(step);
+                requestAnimationFrame(step); // Siguiente frame de la animación
             }
         };
         requestAnimationFrame(step);
     };
 
     return (
-        <div
-            ref={ref}
-            className="text-center group transition-all duration-300"
-        >
+        <div ref={ref} className="text-center group transition-all duration-300">
             <div className="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center text-2xl mb-4 mx-auto group-hover:scale-110 transition-transform">
                 {icon}
             </div>
@@ -52,19 +59,20 @@ export default function AnimatedCounter({ target, label, icon, suffix = '' }) {
 }
 
 /**
- * Wrapper: renderiza un grupo de contadores
- * Recibe los datos desde data-counters='[...]' en el HTML
+ * WRAPPER: CounterGroup
+ * Carga los datos desde un atributo HTML (JSON) y genera los contadores.
  */
 export function CounterGroup() {
     const [counters, setCounters] = useState([]);
 
     useEffect(() => {
+        // Leemos los datos directamente del div con id 'react-counters' en Twig
         const el = document.getElementById('react-counters');
         if (el?.dataset.counters) {
             try {
                 setCounters(JSON.parse(el.dataset.counters));
             } catch (e) {
-                console.error('Error parsing counters data:', e);
+                console.error('Error al parsear datos de contadores:', e);
             }
         }
     }, []);

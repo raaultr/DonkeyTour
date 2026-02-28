@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
+// --- CONFIGURACIÓN ESTÁTICA ---
+// Definimos un diccionario para no repetir estilos. 
+// Cada tipo de servicio tiene su propio icono, nombre legible y color temático.
 const TYPE_CONFIG = {
     tour:        { icon: '🗺️', label: 'Tours',          color: 'amber'   },
     therapy:     { icon: '💆', label: 'Terapias',        color: 'emerald' },
@@ -8,6 +11,7 @@ const TYPE_CONFIG = {
     service:     { icon: '⭐', label: 'Servicios',       color: 'sky'     },
 };
 
+// Mapeo de colores de Tailwind para los Badges (etiquetas pequeñas)
 const BADGE_COLORS = {
     amber:   'bg-amber-100 text-amber-800',
     emerald: 'bg-emerald-100 text-emerald-800',
@@ -16,6 +20,7 @@ const BADGE_COLORS = {
     sky:     'bg-sky-100 text-sky-800',
 };
 
+// Mapeo de colores para fondos suaves (detrás del icono)
 const BG_COLORS = {
     amber:   'bg-amber-50',
     emerald: 'bg-emerald-50',
@@ -24,6 +29,7 @@ const BG_COLORS = {
     sky:     'bg-sky-50',
 };
 
+// Mapeo de colores para el texto del icono
 const TEXT_COLORS = {
     amber:   'text-amber-600',
     emerald: 'text-emerald-600',
@@ -32,12 +38,15 @@ const TEXT_COLORS = {
     sky:     'text-sky-600',
 };
 
+// --- COMPONENTE PRINCIPAL ---
 export default function ServiceFilter() {
-    const [services, setServices] = useState([]);
-    const [activeFilter, setActiveFilter] = useState('all');
-    const [loading, setLoading] = useState(true);
-    const [searchTerm, setSearchTerm] = useState('');
+    // ESTADOS:
+    const [services, setServices] = useState([]);      // Lista completa de la API
+    const [activeFilter, setActiveFilter] = useState('all'); // Filtro de tipo seleccionado
+    const [loading, setLoading] = useState(true);      // Estado de carga
+    const [searchTerm, setSearchTerm] = useState('');  // Texto de la barra de búsqueda
 
+    // CARGA DE DATOS: Se ejecuta una sola vez al montar el componente
     useEffect(() => {
         fetch('/api/services')
             .then(res => res.json())
@@ -48,9 +57,11 @@ export default function ServiceFilter() {
             .catch(() => setLoading(false));
     }, []);
 
-    // Tipos disponibles dinámicamente
+    // LÓGICA DE FILTRADO: 
+    // 1. Extraemos qué tipos existen en los datos actuales (usando Set para no repetir)
     const availableTypes = [...new Set(services.map(s => s.type))];
 
+    // 2. Filtramos la lista según el botón activo y el texto buscado
     const filtered = services.filter(s => {
         const matchType = activeFilter === 'all' || s.type === activeFilter;
         const matchSearch = !searchTerm ||
@@ -59,8 +70,10 @@ export default function ServiceFilter() {
         return matchType && matchSearch;
     });
 
+    // Función auxiliar para obtener la config de un tipo (o el por defecto)
     const getConfig = (type) => TYPE_CONFIG[type] || TYPE_CONFIG.service;
 
+    // Pantalla de carga (Spinner)
     if (loading) {
         return (
             <div className="flex items-center justify-center py-20">
@@ -74,9 +87,10 @@ export default function ServiceFilter() {
 
     return (
         <div>
-            {/* Barra de filtros + búsqueda */}
+            {/* BARRA SUPERIOR: Filtros de botones + Input de búsqueda */}
             <div className="bg-white rounded-2xl shadow-lg p-4 md:p-5 flex flex-col md:flex-row items-center gap-4 border border-stone-100 mb-12">
                 <div className="flex flex-wrap items-center justify-center gap-2 flex-1">
+                    {/* Botón especial para "Todos" */}
                     <FilterButton
                         active={activeFilter === 'all'}
                         onClick={() => setActiveFilter('all')}
@@ -84,6 +98,7 @@ export default function ServiceFilter() {
                         icon="✨"
                         count={services.length}
                     />
+                    {/* Botones dinámicos según los tipos que vengan de la base de datos */}
                     {availableTypes.map(type => {
                         const cfg = getConfig(type);
                         return (
@@ -98,6 +113,8 @@ export default function ServiceFilter() {
                         );
                     })}
                 </div>
+
+                {/* Buscador de texto con icono de lupa y botón para borrar (X) */}
                 <div className="relative w-full md:w-64">
                     <input
                         type="text"
@@ -120,18 +137,19 @@ export default function ServiceFilter() {
                 </div>
             </div>
 
-            {/* Resultados */}
+            {/* Contador de resultados */}
             <div className="mb-4 text-sm text-stone-400 font-medium">
                 {filtered.length} {filtered.length === 1 ? 'servicio encontrado' : 'servicios encontrados'}
             </div>
 
-            {/* Grid de servicios */}
+            {/* GRID: Aquí se muestran las tarjetas de los servicios filtrados */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filtered.map((service, index) => (
                     <ServiceCard key={service.id} service={service} index={index} />
                 ))}
             </div>
 
+            {/* ESTADO VACÍO: Si no hay resultados, mostramos este aviso */}
             {filtered.length === 0 && (
                 <div className="text-center py-20">
                     <p className="text-6xl mb-4">🔍</p>
@@ -149,6 +167,7 @@ export default function ServiceFilter() {
     );
 }
 
+// --- SUB-COMPONENTE: BOTÓN DE FILTRO ---
 function FilterButton({ active, onClick, label, icon, count }) {
     return (
         <button
@@ -161,6 +180,7 @@ function FilterButton({ active, onClick, label, icon, count }) {
         >
             <span>{icon}</span>
             <span>{label}</span>
+            {/* Burbuja pequeña con el número de servicios de ese tipo */}
             <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-bold ${
                 active ? 'bg-white/20 text-white' : 'bg-stone-100 text-stone-400'
             }`}>
@@ -170,7 +190,9 @@ function FilterButton({ active, onClick, label, icon, count }) {
     );
 }
 
+// --- SUB-COMPONENTE: TARJETA DE SERVICIO ---
 function ServiceCard({ service, index }) {
+    // Buscamos la configuración visual según el tipo de servicio
     const cfg = TYPE_CONFIG[service.type] || TYPE_CONFIG.service;
     const color = cfg.color;
     const title = service.name || cfg.label;
@@ -179,31 +201,32 @@ function ServiceCard({ service, index }) {
         <a
             href={`/service/${service.id}`}
             className="bg-white rounded-[2rem] p-8 border border-stone-100 shadow-sm hover:shadow-xl transition-all duration-300 group block relative overflow-hidden"
+            // Retraso de animación en cascada según el índice
             style={{ animationDelay: `${index * 80}ms` }}
         >
-            {/* Badge tipo */}
+            {/* ETIQUETA (Badge) de tipo en la esquina superior derecha */}
             <span className={`${BADGE_COLORS[color]} text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider absolute top-6 right-6`}>
                 {cfg.label}
             </span>
 
-            {/* Icono */}
+            {/* CONTENEDOR DEL ICONO: Cambia de tamaño con el hover de la tarjeta */}
             <div className={`w-14 h-14 ${BG_COLORS[color]} ${TEXT_COLORS[color]} rounded-2xl flex items-center justify-center text-2xl mb-6 group-hover:scale-110 transition-transform`}>
                 {cfg.icon}
             </div>
 
-            {/* Título */}
+            {/* Título del servicio */}
             <h3 className="text-xl font-bold text-[#3E2F28] mb-3 pr-20">
                 {title}
             </h3>
 
-            {/* Descripción */}
+            {/* Descripción con recorte de texto si es muy larga (line-clamp-3) */}
             <p className="text-stone-500 text-sm leading-relaxed mb-6 line-clamp-3">
                 {service.description.length > 120
                     ? service.description.slice(0, 120) + '…'
                     : service.description}
             </p>
 
-            {/* Meta */}
+            {/* METADATOS: Duración y Aforo máximo (este último se oculta si es apadrinamiento) */}
             <div className="flex items-center gap-6 text-xs text-stone-400 font-medium">
                 <span className="flex items-center gap-1.5">
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
@@ -217,7 +240,7 @@ function ServiceCard({ service, index }) {
                 )}
             </div>
 
-            {/* Precio + CTA */}
+            {/* PIE DE TARJETA: Precio formateado y enlace con flecha animada */}
             <div className="mt-6 pt-5 border-t border-stone-100 flex items-center justify-between">
                 <span className="text-2xl font-bold text-[#3E2F28]">
                     {service.basePrice.toFixed(2).replace('.', ',')}€
