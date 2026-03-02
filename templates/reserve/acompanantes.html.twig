@@ -83,7 +83,7 @@
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
+function initCompanions() {
     const container  = document.getElementById('companionsContainer');
     const addBtn     = document.getElementById('addCompanion');
     const maxComp    = {{ max_companions }};
@@ -163,6 +163,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     updateAddButton();
-});
+}
+
+/* turbo:load se dispara tanto en la carga inicial como tras navegaciones Turbo Drive */
+document.addEventListener('turbo:load', initCompanions);
 </script>
 {% endblock %}
